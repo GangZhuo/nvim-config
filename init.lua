@@ -1,11 +1,6 @@
--- Load vim options
-require("config.options")
-
--- Try auto-configuring a proxy if it is not in the environment
-require("config.proxy")
-
--- Lazy load plugins
-require("config.lazy")
-
--- Set colorscheme
-vim.cmd.colorscheme("sonokai")
+require("config.options")    -- Load vim options
+require("config.autocmds")   -- Load auto commands
+require("config.usercmds")   -- Load user commands
+require("config.mappings")   -- Load key mappings
+require("config.proxy")      -- Auto-configuring a proxy
+require("config.lazy")       -- Lazy load plugins

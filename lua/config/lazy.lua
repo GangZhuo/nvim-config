@@ -12,15 +12,6 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- autocmds and keymaps can wait to load
-vim.api.nvim_create_autocmd("User", {
-  group = vim.api.nvim_create_augroup("trigger-lazy-done", { clear = true }),
-  pattern = "VeryLazy",
-  callback = function()
-    require("config.lazydone")
-  end,
-})
-
 require("lazy").setup({
   spec = {
     -- import plugins
