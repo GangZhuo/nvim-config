@@ -1,37 +1,4 @@
-
---- Join Directory
---- e.g.
----  local str = join_arr({a=1, b=2}, ",")
----  str: a:1,b:2
-local function join_dic(dic, sep)
-  local str = ""
-  sep = sep or ','
-  for k,v in pairs(dic) do
-      if str:len() == 0 then
-        str = string.format("%s:%s", k, v)
-      else
-        str = str..string.format("%s%s:%s", sep, k, v)
-      end
-  end
-  return str
-end
-
---- Join array
---- e.g.
----  local str = join_arr({"a", "b","c","d"},",")
----  str: a,b,c,d
-local function join_arr(dic, sep)
-  local str = ""
-  sep = sep or ','
-  for _,v in ipairs(dic) do
-      if str:len() == 0 then
-        str = v
-      else
-        str = str..string.format("%s%s", sep, v)
-      end
-  end
-  return str
-end
+local utils = require("config.utils")
 
 -- Custom mapping <leader>
 vim.g.mapleader = ','
@@ -41,7 +8,7 @@ vim.g.vimsyn_embed = 'l'
 
 -- Change fillchars
 -- See https://neovim.io/doc/user/options.html#'fillchars'
-vim.o.fillchars = join_dic({
+vim.o.fillchars = utils.join_dic({
   vert      = "│",
   eob       = " ",
   msgsep    = "‾",
@@ -70,7 +37,7 @@ vim.o.history = 500
 -- Disable creating swapfiles, see https://stackoverflow.com/q/821902/6064933
 vim.o.swapfile = false
 
-local wildignore = join_arr({
+local wildignore = utils.join_arr({
   "*.o",
   "*.obj",
   "*.dylib",
@@ -135,7 +102,7 @@ vim.o.shiftwidth  = 4     -- number of spaces to use for autoindent
 vim.o.expandtab   = true  -- expand tab to spaces so that tabs are spaces
 
 -- Set matching pairs of characters and highlight matching brackets
-vim.o.matchpairs = vim.o.matchpairs .. "," .. join_arr({
+vim.o.matchpairs = vim.o.matchpairs .. "," .. utils.join_arr({
   "<:>",
   "「:」",
   "『:』",
@@ -156,7 +123,7 @@ vim.o.smartcase = true
 
 -- File and script encoding settings for vim
 vim.o.fileencoding = "utf-8"
-vim.o.fileencodings = join_arr({
+vim.o.fileencodings = utils.join_arr({
   "ucs-bom",
   "utf-8",
   "cp936",
@@ -226,7 +193,7 @@ vim.o.startofline = false
 vim.o.signcolumn = "yes:2"
 
 -- diff options
-vim.o.diffopt = join_arr({
+vim.o.diffopt = utils.join_arr({
   "vertical",   -- show diff in vertical position
   "filler",     -- show filler for deleted lines
   "closeoff",   -- turn off diff when one file window is closed
@@ -243,7 +210,7 @@ vim.o.cmdheight = 2
 
 -- External program to use for grep command
 if vim.fn.executable("rg") == 1 then
-  vim.o.grepprg = join_arr({
+  vim.o.grepprg = utils.join_arr({
     "rg",
     "--vimgrep",
     "--no-heading",
