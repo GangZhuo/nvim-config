@@ -1,12 +1,17 @@
 local utils = require("config.utils")
 
+-- Convenience functions for printing messages
+vim.info = utils.info
+vim.warn = utils.warn
+vim.err = utils.err
+
 -- check version
 local expected_ver = "0.9.0"
 if not utils.expect_ver(expected_ver) then
   local msg = string.format(
       "Unsupported nvim version: expect %s, but got %s instead!",
       expected_ver, utils.version())
-  utils.err(msg)
+  vim.err(msg)
   return
 end
 
