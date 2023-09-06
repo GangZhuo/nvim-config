@@ -1,4 +1,5 @@
 return {
+
   -- Main colorschemes
   {
     "sainnhe/sonokai",
@@ -10,9 +11,11 @@ return {
       vim.cmd.colorscheme("sonokai")
     end
   },
+
   -- Optional colorschemes
   {
     "rebelot/kanagawa.nvim",
     lazy = true,
   },
+
 }
