@@ -11,10 +11,4 @@ return {
     end
   },
 
-  -- Show marks in signcolumn
-  {
-    "kshenoy/vim-signature",
-    event = "VeryLazy",
-  },
-
 }

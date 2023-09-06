@@ -1,5 +1,33 @@
 return {
 
+  -- Better `vim.notify()`
+  {
+    "rcarriga/nvim-notify",
+    event = "VeryLazy",
+    keys = {
+      {
+        "<leader>un",
+        function()
+          require("notify").dismiss({ silent = true, pending = true })
+        end,
+        desc = "Dismiss all Notifications",
+      },
+    },
+    opts = {
+      timeout = 3000,
+      max_height = function()
+        return math.floor(vim.o.lines * 0.75)
+      end,
+      max_width = function()
+        return math.floor(vim.o.columns * 0.75)
+      end,
+    },
+    config = function(_, opts)
+      require("notify").setup(opts)
+      vim.notify = require("notify")
+    end,
+  },
+
   {
     "akinsho/bufferline.nvim",
     event = "VeryLazy",
@@ -327,6 +355,130 @@ return {
         end,
       })
     end,
+  },
+
+  -- which-key helps you remember key bindings by showing a popup
+  -- with the active keybindings of the command you started typing.
+  {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    opts = {
+      plugins = { spelling = true },
+      defaults = {
+        mode = { "n", "v" },
+        ["g"] = { name = "+goto" },
+        ["gz"] = { name = "+surround" },
+        ["]"] = { name = "+next" },
+        ["["] = { name = "+prev" },
+        ["<leader><tab>"] = { name = "+tabs" },
+        ["<leader>b"] = { name = "+buffer" },
+        ["<leader>c"] = { name = "+code" },
+        ["<leader>f"] = { name = "+file/find" },
+        ["<leader>g"] = { name = "+git" },
+        ["<leader>gh"] = { name = "+hunks" },
+        ["<leader>q"] = { name = "+quit/session" },
+        ["<leader>s"] = { name = "+search" },
+        ["<leader>u"] = { name = "+ui" },
+        ["<leader>w"] = { name = "+windows" },
+        ["<leader>x"] = { name = "+diagnostics/quickfix" },
+      },
+    },
+    config = function(_, opts)
+      local wk = require("which-key")
+      wk.setup(opts)
+      wk.register(opts.defaults)
+    end,
+  },
+
+  -- Show match number and index for searching
+  {
+    "kevinhwang91/nvim-hlslens",
+    event = "VeryLazy",
+    opts = {
+      -- If calm_down is true, clear all lens and highlighting When the cursor is
+      -- out of the position range of the matched instance or any texts are changed
+      calm_down = false,
+      -- Only add lens for the nearest matched instance and ignore others
+      nearest_only = false,
+      -- When to open the floating window for the nearest lens.
+      --   'auto': floating window will be opened if room isn't enough for virtual text;
+      --   'always': always use floating window instead of virtual text;
+      --   'never': never use floating window for the nearest lens
+      nearest_float_when = 'auto'
+    },
+    config = function(_, opts)
+      require("hlslens").setup(opts)
+      local activate_hlslens = function(direction)
+        local cmd = string.format("normal! %s%s", vim.v.count1, direction)
+        local status, msg = pcall(vim.cmd, cmd)
+        if not status then
+          -- 13 is the index where real error message starts
+          msg = msg:sub(13)
+          vim.api.nvim_err_writeln(msg)
+          return
+        end
+        require("hlslens").start()
+      end
+
+      vim.keymap.set("n", "n", "", {
+        callback = function()
+          activate_hlslens("n")
+        end,
+      })
+ 
+      vim.keymap.set("n", "N", "", {
+        callback = function()
+          activate_hlslens("N")
+        end,
+      })
+
+      vim.keymap.set("n", "*", "", {
+        callback = function()
+          vim.fn.execute("normal! *N")
+          require('hlslens').start()
+        end,
+      })
+      vim.keymap.set("n", "#", "", {
+        callback = function()
+          vim.fn.execute("normal! #N")
+          require('hlslens').start()
+        end,
+      })
+      vim.keymap.set("n", "<BackSpace>", function ()
+        require('hlslens').stop()
+        vim.cmd('nohl')
+      end)
+    end,
+  },
+
+  -- Best quickfix
+  -- * Press <Tab> or <S-Tab> to toggle the sign of item
+  -- * Press zn or zN will create new quickfix list
+  -- * Press zf in quickfix window will enter fzf mode.
+  -- * Press p to toggle auto preview when cursor moved
+  -- * Press P to toggle preview for an item of quickfix list
+  -- * Press ctrl-t/ctrl-x/ctrl-v to open up an item in a new tab,
+  --   a new horizontal split, or in a new vertical split.
+  -- * Press ctrl-q to toggle sign for the selected items
+  -- * Press ctrl-c to close quickfix window and abort fzf
+  {
+    "kevinhwang91/nvim-bqf",
+    ft = "qf",
+    opts = {
+      auto_resize_height = true,
+    },
+  },
+
+  -- Show marks in signcolumn
+  {
+    "kshenoy/vim-signature",
+    event = "VeryLazy",
+  },
+
+  -- Colorizer
+  {
+    "norcalli/nvim-colorizer.lua",
+    cmd = "ColorizerToggle",
   },
 
   -- indent guides for Neovim
