@@ -130,37 +130,149 @@ return {
     end,
   },
 
-  -- indent guides for Neovim
+  -- file explorer
   {
-    "lukas-reineke/indent-blankline.nvim",
-    event = { "BufReadPost", "BufNewFile" },
-    opts = {
-      -- char = "▏",
-      char = '',
-      show_end_of_line = false,
-      disable_with_nolist = true,
-      show_trailing_blankline_indent = false,
-      show_current_context = false,
-      filetype_exclude = {
-        "help",
-        "nvim-tree",
-        "lazy",
+    "kyazdani42/nvim-tree.lua",
+    cmd = { "NvimTreeOpen", "NvimTreeToggle" },
+    keys = {
+      {
+        "<leader>e",
+        function()
+          return require("nvim-tree.api").tree.toggle(true, false)
+        end,
+        silent = true,
+        desc = "toggle nvim-tree",
       },
     },
-    config = function (_, opts)
-      require("indent_blankline").setup(opts)
-      local gid = vim.api.nvim_create_augroup("indent_blankline", { clear = true })
-      vim.api.nvim_create_autocmd("InsertEnter", {
-        pattern = "*",
-        group = gid,
-        command = "IndentBlanklineDisable",
-      })
+    opts = {
+      sync_root_with_cwd = true,
+      diagnostics = {
+        enable = true,
+        debounce_delay = 1000,
+        show_on_dirs = true,
+      },
+      on_attach = function(bufnr)
+        local api = require("nvim-tree.api")
 
-      vim.api.nvim_create_autocmd("InsertLeave", {
-        pattern = "*",
-        group = gid,
-        command = "IndentBlanklineEnable",
-      })
+        local edit = function (mode, node)
+          local path = node.absolute_path
+          if node.link_to and not node.nodes then
+            path = node.link_to
+          end
+          require("nvim-tree.actions.node.open-file").fn(mode, path)
+        end
+
+        local expand = function()
+          local node = api.tree.get_node_under_cursor()
+          if node.nodes then
+            if not node.open then
+              require("nvim-tree.lib").expand_or_collapse(node)
+            end
+          elseif node.parent then
+            edit("edit", node)
+          end
+        end
+
+        local collapse = function()
+          local node = api.tree.get_node_under_cursor()
+          if node.nodes and node.open then
+            require("nvim-tree.lib").expand_or_collapse(node)
+            return
+          end
+          -- find parent node which is opened
+          local p = node
+          while p.parent do
+              p = p.parent
+              if p.open then
+                  break
+              end
+          end
+          -- if found and not a root node, collapse the node
+          if p and p ~= node and p.parent and p.open then
+            require("nvim-tree.lib").expand_or_collapse(p)
+            require("nvim-tree.utils").focus_file(p.absolute_path)
+          end
+        end
+
+        local opts = function(desc)
+          return {
+            desc = 'nvim-tree: ' .. desc,
+            buffer = bufnr,
+            noremap = true,
+            silent = true,
+            nowait = true,
+          }
+        end
+
+        api.config.mappings.default_on_attach(bufnr)
+
+        vim.keymap.set('n', 'l', expand,   opts('Expand folder or open a file'))
+        vim.keymap.set('n', 'h', collapse, opts('Collapse the folder'))
+        vim.keymap.set('n', '?', api.tree.toggle_help, opts('Help'))
+      end,
+      view = {
+        adaptive_size = false,
+        centralize_selection = true,
+        --width = 40,
+        side = "left",
+        number = true,
+        relativenumber = true,
+        signcolumn = "yes",
+      },
+      renderer = {
+        group_empty = true,
+      },
+    },
+  },
+
+  -- show file tags in vim window
+  {
+    "liuchengxu/vista.vim",
+    cmd = "Vista",
+    keys = {
+      { "<leader>t", "<Cmd>Vista!!<CR>", desc = "Toggle ctags view window" },
+    },
+    config = function()
+      -- How each level is indented and what to prepend.
+      -- This could make the display more compact or more spacious.
+      -- e.g., more compact: ["▸ ", ""]
+      -- Note: this option only works for the kind renderer, not the tree renderer.
+      vim.g.vista_icon_indent = { "╰─▸ ", "├─▸ " }
+
+      -- Executive used when opening vista sidebar without specifying it.
+      -- See all the avaliable executives via `:echo g:vista#executives`.
+      -- e.g. 'ale', 'coc', 'ctags', 'lcn', 'nvim_lsp', 'vim_lsc', 'vim_lsp'
+      vim.g.vista_default_executive = "ctags"
+      vim.g.vista_finder_alternative_executives = "nvim_lsp"
+
+      -- Set this option to `0` to disable echoing when the cursor moves.
+      vim.g.vista_echo_cursor = 1
+      vim.g.vista_cursor_delay = 150
+
+      -- How to show the detailed formation of current cursor symbol. Avaliable
+      -- options:
+      --
+      -- `echo`         - echo in the cmdline.
+      -- `scroll`       - make the source line of current tag at the center of the
+      --                window.
+      -- `floating_win` - display in neovim's floating window or vim's popup window.
+      --                See if you have neovim's floating window support via
+      --                `:echo exists('*nvim_open_win')` or vim's popup feature
+      --                via `:echo exists('*popup_create')`
+      -- `both`         - both `echo` and `floating_win` if it's avaliable otherwise
+      --                `scroll` will be used.
+      vim.g.vista_echo_cursor_strategy = "floating_win"
+      vim.g.vista_floating_border= "rounded"
+
+      -- Set the executive for some filetypes explicitly. Use the explicit executive
+      -- instead of the default one for these filetypes when using `:Vista` without
+      -- specifying the executive.
+      --vim.g.vista_executive_for = {
+      --  ["c"]   = "nvim_lsp",
+      --  ["cpp"] = "nvim_lsp",
+      --  ["lua"] = "nvim_lsp",
+      --  ["php"] = "nvim_lsp",
+      --}
     end,
   },
 
@@ -213,6 +325,40 @@ return {
           dashboard.section.footer.val = "⚡ Neovim loaded " .. stats.count .. " plugins in " .. ms .. "ms"
           pcall(vim.cmd.AlphaRedraw)
         end,
+      })
+    end,
+  },
+
+  -- indent guides for Neovim
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    event = { "BufReadPost", "BufNewFile" },
+    opts = {
+      -- char = "▏",
+      char = '',
+      show_end_of_line = false,
+      disable_with_nolist = true,
+      show_trailing_blankline_indent = false,
+      show_current_context = false,
+      filetype_exclude = {
+        "help",
+        "nvim-tree",
+        "lazy",
+      },
+    },
+    config = function (_, opts)
+      require("indent_blankline").setup(opts)
+      local gid = vim.api.nvim_create_augroup("indent_blankline", { clear = true })
+      vim.api.nvim_create_autocmd("InsertEnter", {
+        pattern = "*",
+        group = gid,
+        command = "IndentBlanklineDisable",
+      })
+
+      vim.api.nvim_create_autocmd("InsertLeave", {
+        pattern = "*",
+        group = gid,
+        command = "IndentBlanklineEnable",
       })
     end,
   },
