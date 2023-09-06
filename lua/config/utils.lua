@@ -48,8 +48,27 @@ end
 --- @feat: string
 ---   the feature name, like `nvim-0.7` or `unix`.
 --- return: bool
-M.has = function(feat)
+function M.has(feat)
   return fn.has(feat) == 1
+end
+
+function M.fg(name)
+  ---@type {foreground?:number}?
+  local hl = vim.api.nvim_get_hl and vim.api.nvim_get_hl(0, { name = name })
+      or vim.api.nvim_get_hl_by_name(name, true)
+  local fg = hl and hl.fg or hl.foreground
+  return fg and { fg = string.format("#%06x", fg) }
+end
+
+---@param on_attach fun(client, buffer)
+function M.on_attach(on_attach)
+  vim.api.nvim_create_autocmd("LspAttach", {
+    callback = function(args)
+      local buffer = args.buf
+      local client = vim.lsp.get_client_by_id(args.data.client_id)
+      on_attach(client, buffer)
+    end,
+  })
 end
 
 --- Create a dir if it does not exist
@@ -135,7 +154,7 @@ function M.expect_ver(expected_ver)
   return true
 end
 
-M.sudo_exec = function(cmd)
+function M.sudo_exec(cmd)
   fn.inputsave()
   local password = fn.inputsecret("Password: ")
   fn.inputrestore()
@@ -149,7 +168,7 @@ M.sudo_exec = function(cmd)
   return true, output
 end
 
-M.sudo_write = function(filepath, tmpfile)
+function M.sudo_write(filepath, tmpfile)
   if M.zstr(filepath) then filepath = fn.expand("%") end
   if M.zstr(filepath) then
     return false, "No file name"
@@ -168,6 +187,36 @@ M.sudo_write = function(filepath, tmpfile)
   end
   fn.delete(tmpfile)
   return succ, output
+end
+
+-- Get ctags status which shown in status line
+function M.get_tags_status()
+  if vim.g.loaded_gutentags ~= 1 or vim.g.gutentags_enabled ~= 1 then
+    return
+  end
+  local icons = require("config.icons")
+  local path = string.format("%s/tags", vim.loop.cwd())
+  local f
+  if vim.fn.filereadable(path) == 1 then
+    f = io.popen(string.format("stat -c %%Y \"%s\"", path))
+  end
+  if f ~= nil then
+    local last_modified = f:read()
+    local today = os.date("%Y-%m-%d")
+    local last_modified_date = os.date("%Y-%m-%d", last_modified)
+    local last_modified_time = os.date("%H:%M:%S", last_modified)
+    if today == last_modified_date then
+    last_modified = last_modified_time
+    else
+    last_modified = string.format("%s %s",
+        last_modified_date, last_modified_time)
+    end
+    f:close()
+    local action = (not M.zstr(vim.fn["gutentags#statusline"]())) and " "..icons.refresh or ""
+    return string.format("%s%s%s", icons.ctags, last_modified, action)
+  else
+    return (not M.zstr(vim.fn["gutentags#statusline"]())) and (icons.ctags..icons.refresh) or ""
+  end
 end
 
 return M

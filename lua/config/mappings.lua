@@ -90,17 +90,6 @@ keymap.set("n", "<leader>ev", "<cmd>tabnew $MYVIMRC <bar> tcd %:h<cr>", {
   desc = "open init.lua",
 })
 
-keymap.set("n", "<leader>sv", function()
-  vim.cmd([[
-      update $MYVIMRC
-      source $MYVIMRC
-    ]])
-  vim.notify("Nvim config successfully reloaded!", vim.log.levels.INFO, { title = "nvim-config" })
-end, {
-  silent = true,
-  desc = "reload init.lua",
-})
-
 -- Reselect the text that has just been pasted, see also https://stackoverflow.com/a/4317090/6064933.
 keymap.set("n", "<leader>v", "printf('`[%s`]', getregtype()[0])", {
   expr = true,
@@ -132,10 +121,8 @@ keymap.set("x", "c", '"_c')
 keymap.set("n", "<leader>cl", function ()
   if vim.o.cursorcolumn then
     vim.o.cursorcolumn = false
-    vim.notify("cursorcolumn: OFF", vim.log.levels.INFO)
   else
     vim.o.cursorcolumn = true
-    vim.notify("cursorcolumn: ON", vim.log.levels.INFO)
   end
 end, { desc = "toggle cursor column" })
 

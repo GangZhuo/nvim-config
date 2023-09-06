@@ -88,6 +88,23 @@ api.nvim_create_autocmd({ "BufReadPre" }, {
   end,
 })
 
+-- go to last loc when opening a buffer
+api.nvim_create_autocmd("BufReadPost", {
+  group = api.nvim_create_augroup("last_loc", { clear = true }),
+  callback = function()
+    local exclude = { "gitcommit" }
+    local buf = api.nvim_get_current_buf()
+    if vim.tbl_contains(exclude, vim.bo[buf].filetype) then
+      return
+    end
+    local mark = api.nvim_buf_get_mark(buf, '"')
+    local lcount = api.nvim_buf_line_count(buf)
+    if mark[1] > 0 and mark[1] <= lcount then
+      pcall(api.nvim_win_set_cursor, 0, mark)
+    end
+  end,
+})
+
 -- Display a message when the current file is not in utf-8 format.
 -- Note that we need to use `unsilent` command here because of this issue:
 -- https://github.com/vim/vim/issues/4379
@@ -96,8 +113,7 @@ api.nvim_create_autocmd({ "BufRead" }, {
   group = api.nvim_create_augroup("non_utf8_file", { clear = true }),
   callback = function()
     if vim.bo.fileencoding ~= "utf-8" then
-      vim.notify("File not in UTF-8 format!", vim.log.levels.WARN,
-          { title = "nvim-config" })
+      vim.warn("File not in UTF-8 format!")
     end
   end,
 })
@@ -118,6 +134,7 @@ api.nvim_create_autocmd("VimResized", {
   command = "wincmd =",
 })
 
+-- Show diagnostic when hover
 api.nvim_create_autocmd("CursorHold", {
   callback = function()
     local diagnostic = vim.diagnostic

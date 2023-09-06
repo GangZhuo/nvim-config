@@ -23,6 +23,17 @@ return {
     },
   },
 
+  -- automatically update your ctags file
+  {
+    "ludovicchabant/vim-gutentags",
+    event = "VeryLazy",
+    config = function()
+      -- See https://github.com/ludovicchabant/vim-gutentags/blob/master/doc/gutentags.txt
+      -- A list of arguments to pass to `ctags`.
+      -- vim.g.gutentags_ctags_extra_args = {}
+    end,
+  },
+
   -- library used by other plugins
   { "nvim-lua/plenary.nvim", lazy = true },
 }

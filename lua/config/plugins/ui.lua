@@ -37,39 +37,123 @@ return {
     opts = {
       options = {
         numbers = "ordinal",
-        close_command = "bdelete! %d",
-        right_mouse_command = nil,
-        left_mouse_command = "buffer %d",
-        middle_mouse_command = nil,
-        indicator = {
-          icon = "▎", -- this should be omitted if indicator style is not 'icon'
-          style = "icon",
-        },
-        buffer_close_icon = "󰅙",
-        modified_icon = "●",
-        close_icon = "",
-        left_trunc_marker = "",
-        right_trunc_marker = "",
-        max_name_length = 18,
-        max_prefix_length = 15,
-        tab_size = 10,
-        diagnostics = false,
-        custom_filter = function(bufnr)
-          -- You can check whatever you would like and return `true`
-          -- if you would like it to appear and `false` if not.
-          local exclude_ft = { "qf" }
-          local cur_ft = vim.bo[bufnr].filetype
-          return not vim.tbl_contains(exclude_ft, cur_ft)
+        always_show_bufferline = false,
+        diagnostics = "nvim_lsp",
+        diagnostics_indicator = function(_, _, diag)
+          local icons = require("config.icons").diagnostics
+          local ret = (diag.error and icons.Error .. diag.error .. " " or "")
+            .. (diag.warning and icons.Warn .. diag.warning or "")
+          return vim.trim(ret)
         end,
-        show_buffer_icons = false,
-        show_buffer_close_icons = true,
-        show_close_icon = true,
-        show_tab_indicators = true,
-        persist_buffer_sort = true, -- whether or not custom sorted buffers should persist
-        separator_style = "bar",
-        enforce_regular_tabs = false,
-        always_show_bufferline = true,
       },
     },
   },
+
+  -- statusline
+  {
+    "nvim-lualine/lualine.nvim",
+    event = "VeryLazy",
+    opts = function()
+      local icons = require("config.icons")
+      local utils = require("config.utils")
+
+      return {
+        options = {
+          theme = "auto",
+          globalstatus = true,
+          disabled_filetypes = { statusline = { "dashboard", "alpha" } },
+          -- component_separators = { left = "", right = "" },
+          -- section_separators = { left = "", right = "" },
+          section_separators = "",
+          component_separators = "",
+        },
+        sections = {
+          lualine_a = { "mode" },
+          lualine_b = { "branch" },
+          lualine_c = {
+            {
+              "diagnostics",
+              symbols = {
+                error = icons.diagnostics.Error,
+                warn = icons.diagnostics.Warn,
+                info = icons.diagnostics.Info,
+                hint = icons.diagnostics.Hint,
+              },
+            },
+            { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
+            { "filename", path = 1, symbols = { modified = "  ", readonly = "", unnamed = "" } },
+            {
+              function() return require("nvim-navic").get_location() end,
+              cond = function() return package.loaded["nvim-navic"] and require("nvim-navic").is_available() end,
+            },
+          },
+          lualine_x = {
+            {
+              function() return "  " .. require("dap").status() end,
+              cond = function () return package.loaded["dap"] and require("dap").status() ~= "" end,
+              color = utils.fg("Debug"),
+            },
+            { require("lazy.status").updates, cond = require("lazy.status").has_updates, color = utils.fg("Special") },
+            "filetype",
+            "encoding",
+            {
+              "fileformat",
+              symbols = {
+                unix = "unix",
+                dos = "win",
+                mac = "mac",
+              },
+            },
+            {
+              "diff",
+              symbols = {
+                added = icons.git.added,
+                modified = icons.git.modified,
+                removed = icons.git.removed,
+              },
+            },
+          },
+          lualine_y = {
+            { "progress", separator = " ", padding = { left = 1, right = 0 } },
+            { "location", padding = { left = 0, right = 1 } },
+          },
+          lualine_z = {
+            {
+              require("config.utils").get_tags_status,
+              cond = function () return vim.g.loaded_gutentags == 1 and vim.g.gutentags_enabled == 1 end,
+            },
+          },
+        },
+        extensions = { "nvim-tree", "lazy" },
+      }
+    end,
+  },
+
+  -- lsp symbol navigation for lualine. This shows where
+  -- in the code structure you are - within functions, classes,
+  -- etc - in the statusline.
+  {
+    "SmiteshP/nvim-navic",
+    lazy = true,
+    init = function()
+      vim.g.navic_silence = true
+      require("config.utils").on_attach(function(client, buffer)
+        if client.server_capabilities.documentSymbolProvider then
+          require("nvim-navic").attach(client, buffer)
+        end
+      end)
+    end,
+    opts = function()
+      return {
+        separator = " ",
+        highlight = true,
+        depth_limit = 5,
+        icons = require("config.icons").kinds,
+      }
+    end,
+  },
+
+  -- icons
+  { "nvim-tree/nvim-web-devicons", lazy = true },
+
 }
