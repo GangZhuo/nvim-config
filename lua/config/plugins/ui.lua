@@ -31,38 +31,57 @@ return {
   {
     "akinsho/bufferline.nvim",
     event = "VeryLazy",
-    keys = {
-      { "<leader>bp", "<Cmd>BufferLineTogglePin<CR>", desc = "Toggle pin" },
-      { "<leader>bP", "<Cmd>BufferLineGroupClose ungrouped<CR>", desc = "Delete non-pinned buffers" },
-      { "gb", function()
-          if vim.v.count == 0 then
-            vim.cmd("BufferLineCycleNext")
-          else
-            require("bufferline").go_to_buffer(vim.v.count, true)
-          end
-        end,
-        desc = "Next buffer, or goto buffer by ordinal number"
-      },
-      { "gB", function()
-          if vim.v.count == 0 then
-            vim.cmd("BufferLineCyclePrev")
-          else
-            vim.cmd("buffer"..tostring(vim.v.count))
-          end
-        end,
-        desc = "Prev buffer, or goto buffer by absolute number"
-      },
-      { "<leader>1", "<cmd>lua require('bufferline').go_to_buffer(1)<cr>",  desc = "go to first buffer" },
-      { "<leader>2", "<cmd>lua require('bufferline').go_to_buffer(2)<cr>",  desc = "go to 2nd buffer"   },
-      { "<leader>3", "<cmd>lua require('bufferline').go_to_buffer(3)<cr>",  desc = "go to 3rd buffer"   },
-      { "<leader>4", "<cmd>lua require('bufferline').go_to_buffer(4)<cr>",  desc = "go to 4th buffer"   },
-      { "<leader>5", "<cmd>lua require('bufferline').go_to_buffer(5)<cr>",  desc = "go to 5th buffer"   },
-      { "<leader>6", "<cmd>lua require('bufferline').go_to_buffer(6)<cr>",  desc = "go to 6th buffer"   },
-      { "<leader>7", "<cmd>lua require('bufferline').go_to_buffer(7)<cr>",  desc = "go to 7th buffer"   },
-      { "<leader>8", "<cmd>lua require('bufferline').go_to_buffer(8)<cr>",  desc = "go to 8th buffer"   },
-      { "<leader>9", "<cmd>lua require('bufferline').go_to_buffer(9)<cr>",  desc = "go to 9th buffer"   },
-      { "<leader>$", "<cmd>lua require('bufferline').go_to_buffer(-1)<cr>", desc = "go to last buffer"  },
-    },
+    keys = function(_, keys)
+      keys = vim.list_extend(keys or {}, {
+        {
+          "<leader>bp",
+          "<Cmd>BufferLineTogglePin<CR>",
+          desc = "Toggle pin",
+        },
+        {
+          "<leader>bP",
+          "<Cmd>BufferLineGroupClose ungrouped<CR>",
+          desc = "Delete non-pinned buffers",
+        },
+        {
+          "gb",
+          function()
+            if vim.v.count == 0 then
+              vim.cmd("BufferLineCycleNext")
+            else
+              require("bufferline").go_to_buffer(vim.v.count, true)
+            end
+          end,
+          desc = "Next buffer, or goto buffer by ordinal number",
+        },
+        {
+          "gB",
+          function()
+            if vim.v.count == 0 then
+              vim.cmd("BufferLineCyclePrev")
+            else
+              vim.cmd("buffer"..tostring(vim.v.count))
+            end
+          end,
+          desc = "Prev buffer, or goto buffer by absolute number",
+        },
+      })
+      for i,n in ipairs({
+        "first", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th"
+      }) do
+        table.insert(keys, {
+          "<leader>"..i,
+          "<cmd>lua require('bufferline').go_to_buffer("..i..")<cr>",
+          desc = "go to "..n.." buffer",
+        })
+      end
+      table.insert(keys, {
+        "<leader>$",
+        "<cmd>lua require('bufferline').go_to_buffer(-1)<cr>",
+        desc = "go to last buffer",
+      })
+      return keys
+    end,
     opts = {
       options = {
         numbers = "ordinal",
@@ -90,7 +109,12 @@ return {
         options = {
           theme = "auto",
           globalstatus = true,
-          disabled_filetypes = { statusline = { "dashboard", "alpha" } },
+          disabled_filetypes = {
+            statusline = {
+              "dashboard",
+              "alpha",
+            },
+          },
           -- component_separators = { left = "", right = "" },
           -- section_separators = { left = "", right = "" },
           section_separators = "",
@@ -109,20 +133,47 @@ return {
                 hint = icons.diagnostics.Hint,
               },
             },
-            { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
-            { "filename", path = 1, symbols = { modified = "  ", readonly = "", unnamed = "" } },
             {
-              function() return require("nvim-navic").get_location() end,
-              cond = function() return package.loaded["nvim-navic"] and require("nvim-navic").is_available() end,
+              "filetype",
+              icon_only = true,
+              separator = "",
+              padding = { left = 1, right = 0 },
+            },
+            {
+              "filename",
+              path = 1,
+              symbols = {
+                modified = "  ",
+                readonly = "",
+                unnamed = "",
+              },
+            },
+            {
+              function()
+                return require("nvim-navic").get_location()
+              end,
+              cond = function()
+                return package.loaded["nvim-navic"]
+                  and require("nvim-navic").is_available()
+              end,
             },
           },
           lualine_x = {
             {
-              function() return "  " .. require("dap").status() end,
-              cond = function () return package.loaded["dap"] and require("dap").status() ~= "" end,
+              function()
+                return "  " .. require("dap").status()
+              end,
+              cond = function ()
+                return package.loaded["dap"]
+                  and require("dap").status() ~= ""
+              end,
               color = utils.fg("Debug"),
             },
-            { require("lazy.status").updates, cond = require("lazy.status").has_updates, color = utils.fg("Special") },
+            {
+              require("lazy.status").updates,
+              cond = require("lazy.status").has_updates,
+              color = utils.fg("Special"),
+            },
             "filetype",
             "encoding",
             {
@@ -143,13 +194,23 @@ return {
             },
           },
           lualine_y = {
-            { "progress", separator = " ", padding = { left = 1, right = 0 } },
-            { "location", padding = { left = 0, right = 1 } },
+            {
+              "progress",
+              separator = " ",
+              padding = { left = 1, right = 0 },
+            },
+            {
+              "location",
+              padding = { left = 0, right = 1 },
+            },
           },
           lualine_z = {
             {
               require("config.utils").get_gutentags_status,
-              cond = function () return vim.g.loaded_gutentags == 1 and vim.g.gutentags_enabled == 1 end,
+              cond = function ()
+                return vim.g.loaded_gutentags == 1
+                    and vim.g.gutentags_enabled == 1
+              end,
             },
           },
         },
@@ -172,85 +233,92 @@ return {
         desc = "toggle nvim-tree",
       },
     },
-    opts = {
-      sync_root_with_cwd = true,
-      diagnostics = {
-        enable = true,
-        debounce_delay = 1000,
-        show_on_dirs = true,
-      },
-      on_attach = function(bufnr)
-        local api = require("nvim-tree.api")
+    opts = function (_, opts)
+      local api = require("nvim-tree.api")
 
-        local edit = function (mode, node)
-          local path = node.absolute_path
-          if node.link_to and not node.nodes then
-            path = node.link_to
-          end
-          require("nvim-tree.actions.node.open-file").fn(mode, path)
+      local edit = function (mode, node)
+        local path = node.absolute_path
+        if node.link_to and not node.nodes then
+          path = node.link_to
         end
+        require("nvim-tree.actions.node.open-file").fn(mode, path)
+      end
 
-        local expand = function()
-          local node = api.tree.get_node_under_cursor()
-          if node.nodes then
-            if not node.open then
-              require("nvim-tree.lib").expand_or_collapse(node)
-            end
-          elseif node.parent then
-            edit("edit", node)
-          end
-        end
-
-        local collapse = function()
-          local node = api.tree.get_node_under_cursor()
-          if node.nodes and node.open then
+      local expand = function()
+        local node = api.tree.get_node_under_cursor()
+        if node.nodes then
+          if not node.open then
             require("nvim-tree.lib").expand_or_collapse(node)
-            return
           end
-          -- find parent node which is opened
-          local p = node
-          while p.parent do
-              p = p.parent
-              if p.open then
-                  break
-              end
-          end
-          -- if found and not a root node, collapse the node
-          if p and p ~= node and p.parent and p.open then
-            require("nvim-tree.lib").expand_or_collapse(p)
-            require("nvim-tree.utils").focus_file(p.absolute_path)
-          end
+        elseif node.parent then
+          edit("edit", node)
         end
+      end
 
-        local opts = function(desc)
-          return {
-            desc = 'nvim-tree: ' .. desc,
-            buffer = bufnr,
-            noremap = true,
-            silent = true,
-            nowait = true,
-          }
+      local collapse = function()
+        local node = api.tree.get_node_under_cursor()
+        if node.nodes and node.open then
+          require("nvim-tree.lib").expand_or_collapse(node)
+          return
         end
+        -- find parent node which is opened
+        local p = node
+        while p.parent do
+            p = p.parent
+            if p.open then
+                break
+            end
+        end
+        -- if found and not a root node, collapse the node
+        if p and p ~= node and p.parent and p.open then
+          require("nvim-tree.lib").expand_or_collapse(p)
+          require("nvim-tree.utils").focus_file(p.absolute_path)
+        end
+      end
 
-        api.config.mappings.default_on_attach(bufnr)
+      local map_opts = function(bufnr, desc)
+        return {
+          desc = desc,
+          buffer = bufnr,
+          noremap = true,
+          silent = true,
+          nowait = true,
+        }
+      end
 
-        vim.keymap.set('n', 'l', expand,   opts('Expand folder or open a file'))
-        vim.keymap.set('n', 'h', collapse, opts('Collapse the folder'))
-        vim.keymap.set('n', '?', api.tree.toggle_help, opts('Help'))
-      end,
-      view = {
-        adaptive_size = false,
-        centralize_selection = true,
-        --width = 40,
-        side = "left",
-        number = true,
-        relativenumber = true,
-        signcolumn = "yes",
-      },
-      renderer = {
-        group_empty = true,
-      },
-    },
+      return vim.tbl_extend("force", opts or {}, {
+        sync_root_with_cwd = true,
+        diagnostics = {
+          enable = true,
+          debounce_delay = 1000,
+          show_on_dirs = true,
+        },
+        on_attach = function(bufnr)
+          api.config.mappings.default_on_attach(bufnr)
+          vim.keymap.set("n", "l",
+              expand,
+              map_opts(bufnr, "Expand folder or open a file"))
+          vim.keymap.set("n", "h",
+              collapse,
+              map_opts(bufnr, "Collapse the folder"))
+          vim.keymap.set("n", "?",
+              api.tree.toggle_help,
+              map_opts(bufnr, "Show help"))
+        end,
+        view = {
+          adaptive_size = false,
+          centralize_selection = true,
+          width = 40,
+          side = "left",
+          number = true,
+          relativenumber = true,
+          signcolumn = "yes",
+        },
+        renderer = {
+          group_empty = true,
+        },
+      })
+    end,
   },
 
   -- show file tags in vim window
@@ -264,7 +332,8 @@ return {
       -- How each level is indented and what to prepend.
       -- This could make the display more compact or more spacious.
       -- e.g., more compact: ["▸ ", ""]
-      -- Note: this option only works for the kind renderer, not the tree renderer.
+      -- Note: this option only works for the kind renderer,
+      -- not the tree renderer.
       vim.g.vista_icon_indent = { "╰─▸ ", "├─▸ " }
 
       -- Executive used when opening vista sidebar without specifying it.
@@ -277,24 +346,25 @@ return {
       vim.g.vista_echo_cursor = 1
       vim.g.vista_cursor_delay = 150
 
-      -- How to show the detailed formation of current cursor symbol. Avaliable
-      -- options:
+      -- How to show the detailed formation of current cursor symbol.
+      -- Avaliable options:
       --
       -- `echo`         - echo in the cmdline.
-      -- `scroll`       - make the source line of current tag at the center of the
-      --                window.
-      -- `floating_win` - display in neovim's floating window or vim's popup window.
-      --                See if you have neovim's floating window support via
-      --                `:echo exists('*nvim_open_win')` or vim's popup feature
-      --                via `:echo exists('*popup_create')`
-      -- `both`         - both `echo` and `floating_win` if it's avaliable otherwise
-      --                `scroll` will be used.
+      -- `scroll`       - make the source line of current tag at the center
+      --                  of the window.
+      -- `floating_win` - display in neovim's floating window or vim's popup
+      --                  window.
+      --                  See if you have neovim's floating window support
+      --                  via `:echo exists('*nvim_open_win')` or vim's popup
+      --                  feature via `:echo exists('*popup_create')`
+      -- `both`         - both `echo` and `floating_win` if it's avaliable
+      --                  otherwise `scroll` will be used.
       vim.g.vista_echo_cursor_strategy = "floating_win"
       vim.g.vista_floating_border= "rounded"
 
-      -- Set the executive for some filetypes explicitly. Use the explicit executive
-      -- instead of the default one for these filetypes when using `:Vista` without
-      -- specifying the executive.
+      -- Set the executive for some filetypes explicitly. Use the explicit
+      -- executive instead of the default one for these filetypes when using
+      -- `:Vista` without specifying the executive.
       --vim.g.vista_executive_for = {
       --  ["c"]   = "nvim_lsp",
       --  ["cpp"] = "nvim_lsp",
@@ -350,7 +420,8 @@ return {
         callback = function()
           local stats = require("lazy").stats()
           local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
-          dashboard.section.footer.val = "⚡ Neovim loaded " .. stats.count .. " plugins in " .. ms .. "ms"
+          dashboard.section.footer.val =
+            "⚡ Neovim loaded " .. stats.count .. " plugins in " .. ms .. "ms"
           pcall(vim.cmd.AlphaRedraw)
         end,
       })
@@ -395,15 +466,17 @@ return {
     "kevinhwang91/nvim-hlslens",
     event = "VeryLazy",
     opts = {
-      -- If calm_down is true, clear all lens and highlighting When the cursor is
-      -- out of the position range of the matched instance or any texts are changed
+      -- If calm_down is true, clear all lens and highlighting When
+      -- the cursor is out of the position range of the matched
+      -- instance or any texts are changed
       calm_down = false,
       -- Only add lens for the nearest matched instance and ignore others
       nearest_only = false,
       -- When to open the floating window for the nearest lens.
-      --   'auto': floating window will be opened if room isn't enough for virtual text;
+      --   'auto':   floating window will be opened if room isn't enough
+      --             for virtual text;
       --   'always': always use floating window instead of virtual text;
-      --   'never': never use floating window for the nearest lens
+      --   'never':  never use floating window for the nearest lens
       nearest_float_when = 'auto'
     },
     config = function(_, opts)
@@ -500,7 +573,8 @@ return {
     },
     config = function (_, opts)
       require("indent_blankline").setup(opts)
-      local gid = vim.api.nvim_create_augroup("indent_blankline", { clear = true })
+      local gid = vim.api.nvim_create_augroup("indent_blankline",
+          { clear = true })
       vim.api.nvim_create_autocmd("InsertEnter", {
         pattern = "*",
         group = gid,
