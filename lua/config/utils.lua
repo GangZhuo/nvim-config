@@ -190,7 +190,7 @@ function M.sudo_write(filepath, tmpfile)
 end
 
 -- Get ctags status which shown in status line
-function M.get_tags_status()
+function M.get_gutentags_status()
   if vim.g.loaded_gutentags ~= 1 or vim.g.gutentags_enabled ~= 1 then
     return
   end

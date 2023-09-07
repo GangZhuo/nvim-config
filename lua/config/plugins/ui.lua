@@ -148,7 +148,7 @@ return {
           },
           lualine_z = {
             {
-              require("config.utils").get_tags_status,
+              require("config.utils").get_gutentags_status,
               cond = function () return vim.g.loaded_gutentags == 1 and vim.g.gutentags_enabled == 1 end,
             },
           },
