@@ -1,99 +1,7 @@
 return {
 
-  { "folke/lazy.nvim" },
-
-  -- Main colorschemes
-  {
-    "sainnhe/sonokai",
-    -- make sure we load this during startup
-    lazy = false,
-    -- make sure to load this before all the other start plugins
-    priority = 1000,
-    config = function()
-      vim.g.sonokai_enable_italic = 1
-      vim.g.sonokai_better_performance = 1
-      vim.cmd.colorscheme("sonokai")
-    end,
-  },
-
-  -- Optional colorschemes
-  {
-    "rebelot/kanagawa.nvim",
-    lazy = true,
-  },
-
-  -- library used by other plugins
-  { "nvim-lua/plenary.nvim", lazy = true },
-
-  -- Escape from insert mode by 'jk'
-  {
-    "nvim-zh/better-escape.vim",
-    event = 'InsertEnter',
-    config = function()
-      vim.g.better_escape_interval = 200
-    end,
-  },
-
-  -- measure startuptime
-  {
-    "dstein64/vim-startuptime",
-    cmd = "StartupTime",
-    config = function()
-      vim.g.startuptime_tries = 10
-    end,
-  },
-
-  -- Session management. This saves your session in the background,
-  -- keeping track of open buffers, window arrangement, and more.
-  -- You can restore sessions when returning through the dashboard.
-  {
-    "folke/persistence.nvim",
-    event = "BufReadPre",
-    opts = {
-      options = {
-        "buffers",
-        "curdir",
-        "tabpages",
-        "winsize",
-        "help",
-        "globals",
-        "skiprtp",
-      },
-    },
-    keys = {
-      {
-        "<leader>qs",
-        function()
-          require("persistence").load()
-        end,
-        desc = "Restore Session for Current Directory",
-      },
-      {
-        "<leader>ql",
-        function()
-          require("persistence").load({ last = true })
-        end,
-        desc = "Restore Last Session",
-      },
-      {
-        "<leader>qd",
-        function()
-          require("persistence").stop()
-        end,
-        desc = "Don't Save Current Session",
-      },
-    },
-  },
-
-  -- automatically update your ctags file
-  {
-    "ludovicchabant/vim-gutentags",
-    event = "VeryLazy",
-    config = function()
-      -- A list of arguments to pass to `ctags`.
-      -- vim.g.gutentags_ctags_extra_args = {}
-    end,
-  },
+  -- icons
+  { "nvim-tree/nvim-web-devicons", lazy = true },
 
   -- Better `vim.notify()`
   {
@@ -126,8 +34,8 @@ return {
   {
     "akinsho/bufferline.nvim",
     event = "VeryLazy",
-    keys = function(_, keys)
-      keys = vim.list_extend(keys or {}, {
+    keys = function()
+      keys = {
         {
           "<leader>bp",
           "<Cmd>BufferLineTogglePin<CR>",
@@ -160,7 +68,7 @@ return {
           end,
           desc = "Prev buffer, or goto buffer by absolute number",
         },
-      })
+      }
       for i,n in ipairs({
         "first", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th"
       }) do
@@ -328,8 +236,7 @@ return {
         desc = "toggle nvim-tree",
       },
     },
-    opts = function (_, opts)
-      local api = require("nvim-tree.api")
+    opts = function ()
 
       local edit = function (mode, node)
         local path = node.absolute_path
@@ -340,6 +247,7 @@ return {
       end
 
       local expand = function()
+        local api = require("nvim-tree.api")
         local node = api.tree.get_node_under_cursor()
         if node.nodes then
           if not node.open then
@@ -351,6 +259,7 @@ return {
       end
 
       local collapse = function()
+        local api = require("nvim-tree.api")
         local node = api.tree.get_node_under_cursor()
         if node.nodes and node.open then
           require("nvim-tree.lib").expand_or_collapse(node)
@@ -381,7 +290,7 @@ return {
         }
       end
 
-      return vim.tbl_extend("force", opts or {}, {
+      return {
         sync_root_with_cwd = true,
         diagnostics = {
           enable = true,
@@ -389,6 +298,7 @@ return {
           show_on_dirs = true,
         },
         on_attach = function(bufnr)
+          local api = require("nvim-tree.api")
           api.config.mappings.default_on_attach(bufnr)
           vim.keymap.set("n", "l",
               expand,
@@ -412,7 +322,7 @@ return {
         renderer = {
           group_empty = true,
         },
-      })
+      }
     end,
   },
 
@@ -466,6 +376,273 @@ return {
       --  ["lua"] = "nvim_lsp",
       --  ["php"] = "nvim_lsp",
       --}
+    end,
+  },
+
+  -- fuzzy finder
+  {
+    "nvim-telescope/telescope.nvim",
+    cmd = "Telescope",
+    dependencies = {
+      {
+        "nvim-telescope/telescope-fzf-native.nvim",
+        build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release"..
+          " && cmake --build build --config Release"..
+          " && cmake --install build --prefix build",
+      },
+      { "nvim-telescope/telescope-live-grep-args.nvim" },
+    },
+    keys = function()
+      local keys = {}
+
+      local get_visual_selection = function ()
+        local mode = vim.fn.mode()
+        vim.info(mode)
+        if mode ~= "x" then
+          return ""
+        end
+        vim.cmd("noau normal! \"vy")
+        local text = vim.fn.getreg("v")
+        vim.fn.setreg("v", {})
+        text = string.gsub(text, "\n", "")
+        if #text > 0 then
+          return text
+        else
+          return ""
+        end
+      end
+
+      local set_keymap = function (key, picker, theme, desc, opts)
+        opts = opts or {}
+        opts.prompt_title = desc
+        local rhs = function()
+          if theme ~= nil and theme ~= "" then
+            opts = require("telescope.themes")["get_"..theme](opts)
+          end
+          opts.default_text = get_visual_selection()
+          if opts and opts.grep_current_buffer then
+            opts.search_dirs = { vim.api.nvim_buf_get_name(0) }
+          else
+            opts.search_dirs = nil
+          end
+          picker(opts)
+        end
+        table.insert(keys, {
+          key,
+          rhs,
+          { "n", "x" },
+          noremap = true,
+          silent = true,
+          desc = desc,
+        })
+      end
+
+      local symbol_picker = function(opts)
+        local lsp = vim.lsp
+        local buf_clients = lsp.get_active_clients({ bufnr = opts.bufnr })
+        local buf_client_num = #vim.tbl_keys(buf_clients)
+        if buf_client_num > 0 then
+          opts.prompt_title = "Search LSP Symbols in Workspace"
+          require("telescope.builtin").lsp_workspace_symbols(opts)
+        else
+          opts.prompt_title = "Search Ctags Symbols in Workspace"
+          require("telescope.builtin").tags(opts)
+        end
+      end
+
+      local doc_symbol_picker = function(opts)
+        local lsp = vim.lsp
+        local buf_clients = lsp.get_active_clients({ bufnr = opts.bufnr })
+        local buf_client_num = #vim.tbl_keys(buf_clients)
+        if buf_client_num > 0 then
+          opts.prompt_title = "Search LSP Symbols in Current Buffer"
+          require("telescope.builtin").lsp_document_symbols(opts)
+        else
+          opts.prompt_title = "Search Ctags Symbols in Current Buffer"
+          require("telescope.builtin").current_buffer_tags(opts)
+        end
+      end
+
+      set_keymap(
+        "<leader>h",
+        function(...)
+          require("telescope.builtin").builtin(...)
+        end,
+        nil,
+        "Search Builtin Pickers"
+      )
+      set_keymap(
+        "<leader>f",
+        function (...)
+          require("telescope.builtin").find_files(...)
+        end,
+        nil,
+        "Search Files"
+      )
+      set_keymap(
+        "<leader>b",
+        function (...)
+          require("telescope.builtin").buffers(...)
+        end,
+        nil,
+        "Search Buffers",
+        { sort_mru = true, }
+      )
+      set_keymap(
+        "<leader>s",
+        function(...)
+          require("telescope").extensions.live_grep_args.live_grep_args(...)
+        end,
+        nil,
+        "Search in Workspace"
+      )
+      set_keymap(
+        "<leader>c",
+        function(...)
+          require("telescope").extensions.live_grep_args.live_grep_args(...)
+        end,
+        nil,
+        "Search in Current Buffer",
+        { grep_current_buffer = true }
+      )
+      set_keymap(
+        "<leader>w",
+        symbol_picker,
+        nil,
+        "Search LSP/Ctags Symbols in Workspace"
+      )
+      set_keymap(
+        "<leader>d",
+        doc_symbol_picker,
+        nil,
+        "Search LSP/Ctags Symbols in Current Buffer"
+      )
+      set_keymap(
+        "<leader>m",
+        function (...)
+          require("telescope.builtin").marks(...)
+        end,
+        nil,
+        "Search Marks"
+      )
+      set_keymap(
+        "<leader>M",
+        function (...)
+          require("telescope.builtin").keymaps(...)
+        end,
+        nil,
+        "Search Keymaps"
+      )
+      set_keymap(
+        "<leader>r",
+        function (...)
+          require("telescope.builtin").registers(...)
+        end,
+        nil,
+        "Search Registers"
+      )
+      set_keymap(
+        "<leader>q",
+        function (...)
+          require("telescope.builtin").quickfix(...)
+        end,
+        nil,
+        "Search Quick Fix"
+      )
+      set_keymap(
+        "<leader>l",
+        function (...)
+          require("telescope.builtin").loclist(...)
+        end,
+        nil,
+        "Search Location List"
+      )
+      set_keymap(
+        "<leader>n",
+        function(...)
+          require("telescope").extensions.notify.notify(...)
+        end,
+        nil,
+        "Search Notify History"
+      )
+      return keys
+    end,
+    opts = {
+      defaults = {
+        mappings = {
+          i = {
+            ["<C-Down>"] = function(...)
+              require("telescope.actions").cycle_history_next(...)
+            end,
+            ["<C-Up>"] = function(...)
+              require("telescope.actions").cycle_history_prev(...)
+            end,
+
+            ["<C-u>"] = function(...)
+              require("telescope.actions").preview_scrolling_up(...)
+            end,
+            ["<C-d>"] = function(...)
+              require("telescope.actions").preview_scrolling_down(...)
+            end,
+            ["<C-f>"] = function(...)
+              require("telescope.actions").preview_scrolling_left(...)
+            end,
+            ["<C-b>"] = function(...)
+              require("telescope.actions").preview_scrolling_right(...)
+            end,
+          },
+          n = {
+            ["l"] = function(...)
+              require("telescope.actions").select_default(...)
+            end,
+            ["o"] = function(...)
+              -- Open the file
+              require("telescope.actions").select_default(...)
+            end,
+
+            ["<C-u>"] = function(...)
+              require("telescope.actions").preview_scrolling_up(...)
+            end,
+            ["<C-d>"] = function(...)
+              require("telescope.actions").preview_scrolling_down(...)
+            end,
+            ["<C-f>"] = function(...)
+              require("telescope.actions").preview_scrolling_left(...)
+            end,
+            ["<C-b>"] = function(...)
+              require("telescope.actions").preview_scrolling_right(...)
+            end,
+          },
+        }
+      },
+      extensions = {
+        fzf = {
+          fuzzy = true,                    -- false will only do exact matching
+          override_generic_sorter = true,  -- override the generic sorter
+          override_file_sorter = true,     -- override the file sorter
+          case_mode = 'smart_case',        -- options: 'ignore_case', 'respect_case'
+        }
+      }
+    },
+    config = function()
+      require("telescope").load_extension("fzf")
+      require("telescope").load_extension("live_grep_args")
+      --[[
+      -- previewer options
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "TelescopePreviewerLoaded",
+        callback = function(args)
+          if args.data.filetype ~= "help" then
+            vim.wo.number = true
+          end
+          if args.data.bufname:match("*.csv") then
+            vim.wo.wrap = false
+          else
+            vim.wo.wrap = true
+          end
+        end,
+      })
+      --]]
     end,
   },
 
@@ -529,32 +706,7 @@ return {
   {
     "folke/which-key.nvim",
     event = "VeryLazy",
-    opts = {
-      plugins = { spelling = true },
-      defaults = {
-        mode = { "n", "v" },
-        ["g"] = { name = "+goto" },
-        ["gz"] = { name = "+surround" },
-        ["]"] = { name = "+next" },
-        ["["] = { name = "+prev" },
-        ["<leader><tab>"] = { name = "+tabs" },
-        ["<leader>b"] = { name = "+buffer" },
-        ["<leader>c"] = { name = "+code" },
-        ["<leader>f"] = { name = "+file/find" },
-        ["<leader>g"] = { name = "+git" },
-        ["<leader>gh"] = { name = "+hunks" },
-        ["<leader>q"] = { name = "+quit/session" },
-        ["<leader>s"] = { name = "+search" },
-        ["<leader>u"] = { name = "+ui" },
-        ["<leader>w"] = { name = "+windows" },
-        ["<leader>x"] = { name = "+diagnostics/quickfix" },
-      },
-    },
-    config = function(_, opts)
-      local wk = require("which-key")
-      wk.setup(opts)
-      wk.register(opts.defaults)
-    end,
+    opts = {},
   },
 
   -- Show match number and index for searching
@@ -708,9 +860,5 @@ return {
       }
     end,
   },
-
-  -- icons
-  { "nvim-tree/nvim-web-devicons", lazy = true },
-
 
 }

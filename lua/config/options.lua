@@ -24,7 +24,8 @@ vim.o.splitright = true
 
 -- Time in milliseconds to wait for a mapped sequence to complete,
 -- see https://unix.stackexchange.com/q/36882/221410 for more info
-vim.o.timeoutlen = 500
+vim.o.timeout = true
+vim.o.timeoutlen = 300
 
 -- For CursorHold events
 -- Trigger CursorHold event when the user doesn't press a key for
