@@ -13,7 +13,7 @@ return {
         function()
           require("notify").dismiss({ silent = true, pending = true })
         end,
-        desc = "Dismiss all Notifications",
+        desc = "Dismiss all notifications",
       },
     },
     opts = {
@@ -55,7 +55,7 @@ return {
               require("bufferline").go_to_buffer(vim.v.count, true)
             end
           end,
-          desc = "Next buffer, or goto buffer by ordinal number",
+          desc = "Next buffer/Goto buffer by ordinal number",
         },
         {
           "gB",
@@ -66,7 +66,7 @@ return {
               vim.cmd("buffer"..tostring(vim.v.count))
             end
           end,
-          desc = "Prev buffer, or goto buffer by absolute number",
+          desc = "Prev buffer/Goto buffer by absolute number",
         },
       }
       for i,n in ipairs({
@@ -75,13 +75,13 @@ return {
         table.insert(keys, {
           "<leader>"..i,
           "<cmd>lua require('bufferline').go_to_buffer("..i..")<cr>",
-          desc = "go to "..n.." buffer",
+          desc = "Goto "..n.." buffer",
         })
       end
       table.insert(keys, {
         "<leader>$",
         "<cmd>lua require('bufferline').go_to_buffer(-1)<cr>",
-        desc = "go to last buffer",
+        desc = "Goto last buffer",
       })
       return keys
     end,
@@ -228,12 +228,12 @@ return {
     cmd = { "NvimTreeOpen", "NvimTreeToggle" },
     keys = {
       {
-        "<leader>e",
+        "<leader>fe",
         function()
           return require("nvim-tree.api").tree.toggle(true, false)
         end,
         silent = true,
-        desc = "toggle nvim-tree",
+        desc = "Toggle file explorer",
       },
     },
     opts = function ()
@@ -302,10 +302,10 @@ return {
           api.config.mappings.default_on_attach(bufnr)
           vim.keymap.set("n", "l",
               expand,
-              map_opts(bufnr, "Expand folder or open a file"))
+              map_opts(bufnr, "Expand folder/Open file"))
           vim.keymap.set("n", "h",
               collapse,
-              map_opts(bufnr, "Collapse the folder"))
+              map_opts(bufnr, "Collapse folder"))
           vim.keymap.set("n", "?",
               api.tree.toggle_help,
               map_opts(bufnr, "Show help"))
@@ -331,7 +331,7 @@ return {
     "liuchengxu/vista.vim",
     cmd = "Vista",
     keys = {
-      { "<leader>t", "<Cmd>Vista!!<CR>", desc = "Toggle ctags view window" },
+      { "<leader>te", "<Cmd>Vista!!<CR>", desc = "Toggle ctags explorer" },
     },
     config = function()
       -- How each level is indented and what to prepend.
@@ -397,8 +397,7 @@ return {
 
       local get_visual_selection = function ()
         local mode = vim.fn.mode()
-        vim.info(mode)
-        if mode ~= "x" then
+        if mode ~= "v" then
           return ""
         end
         vim.cmd("noau normal! \"vy")
@@ -430,7 +429,7 @@ return {
         table.insert(keys, {
           key,
           rhs,
-          { "n", "x" },
+          mode = { "n", "v" },
           noremap = true,
           silent = true,
           desc = desc,
@@ -442,10 +441,10 @@ return {
         local buf_clients = lsp.get_active_clients({ bufnr = opts.bufnr })
         local buf_client_num = #vim.tbl_keys(buf_clients)
         if buf_client_num > 0 then
-          opts.prompt_title = "Search LSP Symbols in Workspace"
+          opts.prompt_title = "Search LSP Symbols (Current Workspace)"
           require("telescope.builtin").lsp_workspace_symbols(opts)
         else
-          opts.prompt_title = "Search Ctags Symbols in Workspace"
+          opts.prompt_title = "Search Ctags Symbols (Current Workspace)"
           require("telescope.builtin").tags(opts)
         end
       end
@@ -455,10 +454,10 @@ return {
         local buf_clients = lsp.get_active_clients({ bufnr = opts.bufnr })
         local buf_client_num = #vim.tbl_keys(buf_clients)
         if buf_client_num > 0 then
-          opts.prompt_title = "Search LSP Symbols in Current Buffer"
+          opts.prompt_title = "Search LSP Symbols (Current Buffer)"
           require("telescope.builtin").lsp_document_symbols(opts)
         else
-          opts.prompt_title = "Search Ctags Symbols in Current Buffer"
+          opts.prompt_title = "Search Ctags Symbols (Current Buffer)"
           require("telescope.builtin").current_buffer_tags(opts)
         end
       end
@@ -469,7 +468,7 @@ return {
           require("telescope.builtin").builtin(...)
         end,
         nil,
-        "Search Builtin Pickers"
+        "Find Telescope Builtin Pickers"
       )
       set_keymap(
         "<leader>f",
@@ -477,7 +476,7 @@ return {
           require("telescope.builtin").find_files(...)
         end,
         nil,
-        "Search Files"
+        "Find Files"
       )
       set_keymap(
         "<leader>b",
@@ -485,7 +484,7 @@ return {
           require("telescope.builtin").buffers(...)
         end,
         nil,
-        "Search Buffers",
+        "Find Buffers",
         { sort_mru = true, }
       )
       set_keymap(
@@ -523,7 +522,7 @@ return {
           require("telescope.builtin").marks(...)
         end,
         nil,
-        "Search Marks"
+        "Find Marks"
       )
       set_keymap(
         "<leader>M",
@@ -531,7 +530,7 @@ return {
           require("telescope.builtin").keymaps(...)
         end,
         nil,
-        "Search Keymaps"
+        "Find Keymaps"
       )
       set_keymap(
         "<leader>r",
@@ -539,7 +538,7 @@ return {
           require("telescope.builtin").registers(...)
         end,
         nil,
-        "Search Registers"
+        "Find Registers"
       )
       set_keymap(
         "<leader>q",
