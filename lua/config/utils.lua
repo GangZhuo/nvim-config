@@ -119,6 +119,10 @@ function M.may_create_dir(dir)
   end
 end
 
+function M.firstToUpper(str)
+    return (str:gsub("^%l", string.upper))
+end
+
 function M.split(inputstr, sep)
   if sep == nil then
     sep = "%s"

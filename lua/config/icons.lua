@@ -27,6 +27,7 @@ return {
     Constant = " ",
     Constructor = " ",
     Copilot = " ",
+    Dictionary = " ",
     Enum = " ",
     EnumMember = " ",
     Event = " ",
