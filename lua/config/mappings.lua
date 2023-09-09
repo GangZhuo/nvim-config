@@ -98,6 +98,11 @@ map("n", "[b", "<cmd>bprevious<cr>", { desc = "Prev buffer" })
 map("n", "]b", "<cmd>bnext<cr>", { desc = "Next buffer" })
 map("n", "<leader>bb", "<cmd>e #<cr>", { desc = "Switch to Other Buffer" })
 map("n", "<leader>`", "<cmd>e #<cr>", { desc = "Switch to Other Buffer" })
+-- Delete a buffer, without closing the window,
+-- see https://stackoverflow.com/q/4465095/6064933
+map("n", [[\d]], "<cmd>bprevious <bar> bdelete #<cr>",
+  { silent = true, desc = "delete buffer" }
+)
 
 -- Break inserted text into smaller undo units when we
 -- insert some punctuation chars.
@@ -164,6 +169,29 @@ end, {
     desc = "Show treesitter captures"
 })
 
+-- Terminal Mappings
+map("n", "<leader>ft",
+  function()
+    require("config.utils").float_term()
+  end,
+  { desc = "Float Terminal" }
+)
+map("t", "<esc><esc>", "<c-\\><c-n>", { desc = "Enter Normal Mode" })
+map("t", "<C-h>", "<cmd>wincmd h<cr>", { desc = "Go to left window" })
+map("t", "<C-j>", "<cmd>wincmd j<cr>", { desc = "Go to lower window" })
+map("t", "<C-k>", "<cmd>wincmd k<cr>", { desc = "Go to upper window" })
+map("t", "<C-l>", "<cmd>wincmd l<cr>", { desc = "Go to right window" })
+map("t", "<C-/>", "<cmd>close<cr>", { desc = "Hide Terminal" })
+map("t", "<c-_>", "<cmd>close<cr>", { desc = "which_key_ignore" })
+
+-- Diagnostic
+
+-- Close location list or quickfix list if they are present, see https://superuser.com/q/355325/736190
+map("n", [[\x]], "<cmd>windo lclose <bar> cclose <cr>", {
+  silent = true,
+  desc = "close qf and location list",
+})
+
 map('n', '<space>e', diagnostic.open_float, { desc = "Show diagnostics in a floating window." })
 map('n', '<space>l', diagnostic.setloclist, { desc = "Add buffer diagnostics to the location list." })
 map('n', '[d',       diagnostic.goto_prev,  { desc = "Move to the previous diagnostic in the current buffer." })
@@ -184,17 +212,3 @@ map("n", "]q", "<cmd>cnext<cr>zv", { silent = true, desc = "next qf item" })
 map("n", "[Q", "<cmd>cfirst<cr>zv", { silent = true, desc = "first qf item" })
 map("n", "]Q", "<cmd>clast<cr>zv", { silent = true, desc = "last qf item" })
 
--- Close location list or quickfix list if they are present, see https://superuser.com/q/355325/736190
-map("n", [[\x]], "<cmd>windo lclose <bar> cclose <cr>", {
-  silent = true,
-  desc = "close qf and location list",
-})
-
--- Delete a buffer, without closing the window, see https://stackoverflow.com/q/4465095/6064933
-map("n", [[\d]], "<cmd>bprevious <bar> bdelete #<cr>", {
-  silent = true,
-  desc = "delete buffer",
-})
-
--- Use Esc to quit builtin terminal
-map("t", "<Esc>", [[<c-\><c-n>]])
