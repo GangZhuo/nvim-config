@@ -58,7 +58,7 @@ function M.fg(name)
 end
 
 ---@param on_attach fun(client, buffer)
-function M.on_attach(on_attach)
+function M.on_lsp_attach(on_attach)
   vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(args)
       local buffer = args.buf
@@ -70,7 +70,7 @@ end
 
 -- Gets a new ClientCapabilities object describing
 -- the LSP client capabilities.
-function M.lsp_capabilities()
+function M.get_lsp_capabilities()
   if M.has("cmp_nvim_lsp") then
     return require("cmp_nvim_lsp").default_capabilities()
   else
@@ -79,7 +79,7 @@ function M.lsp_capabilities()
 end
 
 -- Default lsp attach function
-function M.lsp_attach(client, bufnr)
+function M.default_lsp_attach(client, bufnr)
   local bufmap = function(mode, l, r, desc)
     local opts = {
       noremap = true,
