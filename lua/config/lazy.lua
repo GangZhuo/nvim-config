@@ -23,7 +23,7 @@ require("lazy").setup({
     -- It's recommended to leave version=false for now,
     -- since a lot the plugin that support versioning, have outdated releases,
     -- which may break your Neovim install.
-    version = "", -- try installing the latest stable versions of plugins
+    version = false,
   },
   checker = {
     -- don't automatically check for plugin updates
