@@ -4,6 +4,15 @@ return {
   {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
+    dependencies = {
+      "mason.nvim",
+      {
+        "hrsh7th/cmp-nvim-lsp",
+        cond = function()
+          return require("config.utils").has("nvim-cmp")
+        end,
+      },
+    },
     opts = {
       diagnostics = {
         virtual_text = false,
@@ -139,7 +148,7 @@ return {
               workspace = {
                 library = {
                   -- Make the server aware of Neovim runtime files
-                  api.nvim_get_runtime_file("", true),
+                  vim.api.nvim_get_runtime_file("", true),
                 },
               },
             },

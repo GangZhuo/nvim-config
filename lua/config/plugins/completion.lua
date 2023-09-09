@@ -49,7 +49,7 @@ return {
   -- auto completion
   {
     "hrsh7th/nvim-cmp",
-    event = "InsertEnter",
+    event = { "InsertEnter", "CmdlineEnter" },
     cmd = "CmpStatus",
     dependencies = {
       -- nvim-cmp completion sources
