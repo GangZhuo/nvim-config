@@ -30,10 +30,6 @@ function M.err(msg)
   vim.cmd("echohl None")
 end
 
-function M.executable(name)
-  return fn.executable(name) == 1
-end
-
 function M.exec_cmd(cmd)
   local handle = io.popen(cmd)
   if handle ~= nil then
@@ -66,49 +62,6 @@ function M.on_lsp_attach(on_attach)
       on_attach(client, buffer)
     end,
   })
-end
-
--- Gets a new ClientCapabilities object describing
--- the LSP client capabilities.
-function M.get_lsp_capabilities()
-  if M.has("cmp_nvim_lsp") then
-    return require("cmp_nvim_lsp").default_capabilities()
-  else
-    return vim.lsp.protocol.make_client_capabilities()
-  end
-end
-
--- Default lsp attach function
-function M.default_lsp_attach(client, bufnr)
-  local bufmap = function(mode, l, r, desc)
-    local opts = {
-      noremap = true,
-      silent = true,
-      buffer = bufnr,
-      desc = desc,
-    }
-    keymap.set(mode, l, r, opts)
-  end
-
-  bufmap("n", "gD",        vim.lsp.buf.declaration,    "go to declaration")
-  bufmap("n", "gd",        vim.lsp.buf.definition,     "go to definition")
-  bufmap("n", "gi",        vim.lsp.buf.implementation, "go to implementation")
-  bufmap("n", "gr",        vim.lsp.buf.references,     "show references")
-  bufmap("n", "K",         vim.lsp.buf.hover,          "show help")
-  bufmap("n", "<C-k>",     vim.lsp.buf.signature_help, "show signature help")
-  bufmap("n", "<space>rn", vim.lsp.buf.rename,         "varialbe rename")
-  bufmap("n", "<space>ca", vim.lsp.buf.code_action,    "LSP code action")
-  bufmap("n", "<space>wa", vim.lsp.buf.add_workspace_folder, "add workspace folder")
-  bufmap("n", "<space>wr", vim.lsp.buf.remove_workspace_folder, "remove workspace folder")
-
-  -- Set some key bindings conditional on server capabilities
-  if client.server_capabilities.documentFormattingProvider then
-    bufmap("n", "<space>fc", vim.lsp.buf.format,         "format code")
-  end
-
-  local msg = string.format("Language server %s started!", client.name)
-  vim.notify(msg, vim.log.levels.INFO, { title = "LSP" })
-
 end
 
 --- Create a dir if it does not exist
