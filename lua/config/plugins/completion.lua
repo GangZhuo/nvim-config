@@ -76,9 +76,6 @@ return {
       local defaults = require("cmp.config.default")()
       local luasnip = require("luasnip")
       return {
-        completion = {
-          completeopt = "menu,menuone,noinsert",
-        },
         snippet = {
           expand = function(args)
             luasnip.lsp_expand(args.body)
@@ -114,7 +111,7 @@ return {
           { name = "nvim_lsp" },
           { name = "luasnip" },
           { name = "buffer" },
-          { name = "path", option = { trailing_slash = true } },
+          { name = "path" },
           { name = "ctags", option = { trigger_characters = {} } },
           { name = "nvim_lua" },
           { name = "dictionary", keyword_length = 2 },
@@ -137,7 +134,6 @@ return {
             hl_group = "CmpGhostText",
           },
         },
-        sorting = defaults.sorting,
       }
     end,
     config = function(_, opts)
@@ -175,8 +171,10 @@ return {
     end
   },
 
+  -- nvim-cmp dictionary sources
   {
     "uga-rosa/cmp-dictionary",
+    lazy = true,
     opts = {},
     config = function(_, opts)
       local cmp_dict = require("cmp_dictionary")
