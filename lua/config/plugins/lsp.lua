@@ -67,13 +67,12 @@ return {
       -- lsp attach function
       local on_attach = function (client, bufnr)
         local map = function(mode, l, r, desc)
-          local opts = {
+          vim.keymap.set(mode, l, r, {
             noremap = true,
             silent = true,
             buffer = bufnr,
             desc = desc,
-          }
-          vim.keymap.set(mode, l, r, opts)
+          })
         end
 
         map("n", "gD",        vim.lsp.buf.declaration,    "go to declaration")

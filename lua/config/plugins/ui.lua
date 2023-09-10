@@ -35,7 +35,7 @@ return {
     "akinsho/bufferline.nvim",
     event = "VeryLazy",
     keys = function()
-      keys = {
+      local keys = {
         {
           "<leader>bp",
           "<Cmd>BufferLineTogglePin<CR>",
@@ -761,7 +761,7 @@ return {
           activate_hlslens("n")
         end,
       })
- 
+
       vim.keymap.set("n", "N", "", {
         callback = function()
           activate_hlslens("N")
