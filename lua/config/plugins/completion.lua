@@ -62,6 +62,7 @@ return {
       "dmitmel/cmp-cmdline-history",
       "delphinus/cmp-ctags",
       "uga-rosa/cmp-dictionary",
+      "zbirenbaum/copilot-cmp",
     },
     opts = function()
       local has_words_before = function()
@@ -108,6 +109,7 @@ return {
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
         }),
         sources = cmp.config.sources({
+          { name = "copilot" },
           { name = "nvim_lsp" },
           { name = "luasnip" },
           { name = "buffer" },
@@ -138,14 +140,20 @@ return {
     end,
     config = function(_, opts)
       local cmp = require("cmp")
-
       local utils = require("config.utils")
-      if utils.has("copilot.lua") and utils.has("copilot-cmp") then
-        require("copilot_cmp")
-        table.insert(opts.sources, 1, cmp.config.sources({
-          { name = "copilot" }
-        })[1])
+
+      -- Remove source when 'exclusion' is false
+      local function del_source(name, exclusion)
+        if exclusion then return end
+        for i, v in ipairs(opts.sources) do
+          if v.name == name then
+            return table.remove(opts.sources, i)
+          end
+        end
       end
+
+      del_source("copilot", utils.has("copilot.lua"))
+      del_source("nvim_lsp", utils.has("nvim-lspconfig"))
 
       cmp.setup(opts)
 

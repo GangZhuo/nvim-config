@@ -6,12 +6,7 @@ return {
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       "mason.nvim",
-      {
-        "hrsh7th/cmp-nvim-lsp",
-        cond = function()
-          return require("config.utils").has("nvim-cmp")
-        end,
-      },
+      "hrsh7th/cmp-nvim-lsp",
     },
     opts = {
       diagnostics = {
@@ -30,7 +25,6 @@ return {
       },
     },
     config = function(_, opts)
-
       -- Change diagnostic signs.
       for name, icon in pairs(require("config.icons").diagnostics) do
         name = "DiagnosticSign" .. name
@@ -50,7 +44,7 @@ return {
 
       local capabilities
 
-      if utils.has("cmp_nvim_lsp") then
+      if utils.has("nvim-cmp") then
         capabilities = require("cmp_nvim_lsp").default_capabilities()
       else
         capabilities = vim.lsp.protocol.make_client_capabilities()

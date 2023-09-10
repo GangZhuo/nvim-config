@@ -21,6 +21,4 @@ return {
     end
   },
 
-  { "zbirenbaum/copilot-cmp", lazy = true },
-
 }
