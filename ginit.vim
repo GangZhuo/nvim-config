@@ -8,6 +8,6 @@ if exists('g:GuiLoaded')
   GuiTabline 0
   GuiPopupmenu 0
   GuiLinespace 2
-  GuiFont! InconsolataGo\ Nerd\ Font\ Mono:h13:l
+  GuiFont! InconsolataGo\ Nerd\ Font\ Mono:h11:l
 endif
 
