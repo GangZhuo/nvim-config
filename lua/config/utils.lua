@@ -155,10 +155,12 @@ function M.sudo_exec(cmd)
   fn.inputsave()
   local password = fn.inputsecret("Password: ")
   fn.inputrestore()
+  local output
   if M.zstr(password) then
-    return false, "Invalid password, sudo aborted"
+    output = fn.system(string.format("sudo -n %s", cmd))
+  else
+    output = fn.system(string.format("sudo -p '' -S %s", cmd), password)
   end
-  local output = fn.system(string.format("sudo -p '' -S %s", cmd), password)
   if vim.v.shell_error ~= 0 then
     return false, output
   end
