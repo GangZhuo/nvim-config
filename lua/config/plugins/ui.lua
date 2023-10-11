@@ -820,34 +820,30 @@ return {
   -- indent guides for Neovim
   {
     "lukas-reineke/indent-blankline.nvim",
+    main = "ibl",
     event = { "BufReadPost", "BufNewFile" },
     opts = {
-      -- char = "▏",
-      char = '',
-      show_end_of_line = false,
-      disable_with_nolist = true,
-      show_trailing_blankline_indent = false,
-      show_current_context = false,
-      filetype_exclude = {
-        "help",
-        "nvim-tree",
-        "lazy",
+      indent = {
+        char = "",
+      },
+      scope = {
+        enabled = false,
       },
     },
     config = function (_, opts)
-      require("indent_blankline").setup(opts)
-      local gid = vim.api.nvim_create_augroup("indent_blankline",
+      require("ibl").setup(opts)
+      local gid = vim.api.nvim_create_augroup("IBL_Augroup",
           { clear = true })
       vim.api.nvim_create_autocmd("InsertEnter", {
         pattern = "*",
         group = gid,
-        command = "IndentBlanklineDisable",
+        command = "IBLDisable",
       })
 
       vim.api.nvim_create_autocmd("InsertLeave", {
         pattern = "*",
         group = gid,
-        command = "IndentBlanklineEnable",
+        command = "IBLEnable",
       })
     end,
   },
