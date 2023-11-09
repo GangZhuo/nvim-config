@@ -22,6 +22,8 @@ return {
           "lua-language-server",
           "bash-language-server",
           "vim-language-server",
+
+          "codelldb",
         },
       }
     end,
