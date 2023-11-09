@@ -89,7 +89,7 @@ return {
       if not dap.adapters["codelldb"] then
         require("dap").adapters["codelldb"] = {
           type = "server",
-          host = "localhost",
+          --host = "localhost",
           port = "${port}",
           executable = {
             command = vim.fn.exepath("codelldb"),
