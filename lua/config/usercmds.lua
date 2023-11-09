@@ -18,3 +18,19 @@ vim.api.nvim_create_user_command(
   end,
   { nargs = '?', desc = 'Write file with privileges' }
 )
+
+vim.api.nvim_create_user_command(
+  'SetProxy',
+  function()
+    require("config.proxy").set_proxy()
+  end,
+  { nargs = 0, desc = 'Set proxy' }
+)
+
+vim.api.nvim_create_user_command(
+  'UnsetProxy',
+  function()
+    require("config.proxy").unset_proxy()
+  end,
+  { nargs = 0, desc = 'Unset proxy' }
+)

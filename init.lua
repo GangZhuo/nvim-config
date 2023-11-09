@@ -23,4 +23,5 @@ require("config.autocmds")   -- Load auto commands
 require("config.usercmds")   -- Load user commands
 require("config.mappings")   -- Load key mappings
 require("config.proxy")      -- Auto-configuring a proxy
+  .set_proxy()
 require("config.lazy")       -- Lazy load plugins

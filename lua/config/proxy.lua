@@ -17,12 +17,37 @@ local function get_proxy()
   return proxy
 end
 
-for _,var in ipairs({
-  "http_proxy",
-  "https_proxy",
-}) do
-  if not env[var] then
-    env[var] = get_proxy()
+local function set_proxy()
+  for _,var in ipairs({
+    "http_proxy",
+    "https_proxy",
+  }) do
+    if not env[var] then
+      env[var] = get_proxy()
+    end
+  end
+  if not env.no_proxy then
+    local no_proxy = "localhost,127.0.0.1"
+    if env.IP4_GW then
+     no_proxy = no_proxy .. "," .. env.IP4_GW
+    end
+    env.no_proxy = no_proxy
   end
 end
 
+local function unset_proxy()
+  for _,var in ipairs({
+    "http_proxy",
+    "https_proxy",
+  }) do
+    if env[var] then
+      env[var] = nil
+    end
+  end
+  env.no_proxy = nil
+end
+
+return {
+    set_proxy = set_proxy,
+    unset_proxy = unset_proxy,
+}
