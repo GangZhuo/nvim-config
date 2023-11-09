@@ -92,7 +92,7 @@ return {
           host = "localhost",
           port = "${port}",
           executable = {
-            command = "codelldb",
+            command = vim.fn.exepath("codelldb"),
             args = {
               "--port",
               "${port}",
