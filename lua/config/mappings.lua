@@ -59,6 +59,9 @@ map("n", "C", '"_C')
 map("n", "cc", '"_cc')
 map("x", "c", '"_c')
 
+-- Replace visual selection with text in register, but not contaminate the register.
+map("x", "p", 'P')
+
 -- Reselect the text that has just been pasted, see also https://stackoverflow.com/a/4317090/6064933.
 map("n", "<leader>v", "printf('`[%s`]', getregtype()[0])", {
   expr = true,
