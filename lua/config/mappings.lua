@@ -44,9 +44,8 @@ map({ "n", "x" }, "H", "g^")
 map({ "n", "x" }, "L", "g_")
 
 -- Go to start or end of screen
-map({ "n", "x" }, "zh", "H")
-map({ "n", "x" }, "zl", "L")
-map({ "n", "x" }, "zm", "M")
+map({ "n", "x" }, "zh", "H", { desc = "move cursor to screen top" })
+map({ "n", "x" }, "zl", "L", { desc = "move cursor to screen bottom" })
 
 -- Continuous visual shifting (does not exit Visual mode), `gv` means
 -- to reselect previous visual area, see https://superuser.com/q/310417/736190
