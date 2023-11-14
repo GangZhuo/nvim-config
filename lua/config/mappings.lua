@@ -126,16 +126,16 @@ map("n", "<F11>", "<cmd>set spell!<cr>", { desc = "toggle spell" })
 map("i", "<F11>", "<c-o><cmd>set spell!<cr>", { desc = "toggle spell" })
 
 -- Toggle cursor column
-map("n", "<leader>cl", function ()
+map("n", "<leader>uc", function ()
   if vim.o.cursorcolumn then
     vim.o.cursorcolumn = false
   else
     vim.o.cursorcolumn = true
   end
-end, { desc = "toggle cursor column" })
+end, { desc = "Toggle cursor column" })
 
 -- Blink cursor row and column
-map("n", "<leader>cb", function()
+map("n", "<leader>ub", function()
   local cnt = 0
   local blink_times = 7
   local timer = uv.new_timer()
@@ -152,7 +152,7 @@ map("n", "<leader>cb", function()
 
     cnt = cnt + 1
   end))
-end)
+end, { desc = "Blink cursor row and column" })
 
 -- Print treesitter captures
 map("n", "<leader>st", function()
