@@ -184,6 +184,9 @@ map("t", "<c-_>", "<cmd>close<cr>", { desc = "which_key_ignore" })
 
 -- Diagnostic
 
+map("n", "<leader>xl", "<cmd>lopen<cr>", { desc = "Location List" })
+map("n", "<leader>xq", "<cmd>copen<cr>", { desc = "Quickfix List" })
+
 -- Close location list or quickfix list if they are present, see https://superuser.com/q/355325/736190
 map("n", [[\x]], "<cmd>windo lclose <bar> cclose <cr>", {
   silent = true,

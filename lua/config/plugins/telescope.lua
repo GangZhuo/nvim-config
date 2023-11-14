@@ -180,7 +180,7 @@ return {
     },
     keys = function()
       return M.keys({
-        { "<leader>,", M.picker("live_grep"), desc = "Grep", },
+        { "<leader>,", M.picker("live_grep"), desc = "Grep in Workspace", },
         -- find
         { "<leader>fb", M.picker("buffers", { sort_mru = true, sort_lastused = true }), desc = "Find Buffers", },
         { "<leader>fc", M.picker("find_files", { cwd = vim.fn.stdpath("config") }), desc = "Find Config Files", },
@@ -192,15 +192,15 @@ return {
         -- search
         { '<leader>s"', M.picker("registers"), desc = "Registers" },
         { "<leader>sa", M.picker("autocommands"), desc = "Auto Commands" },
-        { "<leader>sb", M.picker("current_buffer_fuzzy_find"), desc = "Buffer" },
+        { "<leader>sb", M.picker("current_buffer_fuzzy_find"), desc = "Fuzzy Search in Buffer" },
         { "<leader>sc", M.picker("command_history"), desc = "Command History" },
         { "<leader>sC", M.picker("commands"), desc = "Commands" },
-        { "<leader>sd", M.picker("diagnostics", { bufnr = 0, }), desc = "Document diagnostics" },
-        { "<leader>sD", M.picker("diagnostics"), desc = "Workspace diagnostics" },
-        { "<leader>sg", M.picker("live_grep"), desc = "Grep" },
-        { "<leader>sG", M.picker("live_grep", { current_buffer = true }), desc = "Grep" },
+        { "<leader>sd", M.picker("diagnostics", { bufnr = 0, }), desc = "Diagnostics in Buffer" },
+        { "<leader>sD", M.picker("diagnostics"), desc = "Diagnostics in Workspace" },
+        { "<leader>sg", M.picker("live_grep"), desc = "Grep in Workspace" },
+        { "<leader>sG", M.picker("live_grep", { current_buffer = true }), desc = "Grep in Buffer" },
         { "<leader>sh", M.picker("help_tags"), desc = "Help Pages" },
-        { "<leader>sH", M.picker("highlights"), desc = "Search Highlight Groups" },
+        { "<leader>sH", M.picker("highlights"), desc = "Highlight Groups" },
         { "<leader>sk", M.picker("keymaps"), desc = "Key Maps" },
         { "<leader>sl", M.picker("loclist"), desc = "Loc List" },
         { "<leader>sM", M.picker("man_pages"), desc = "Man Pages" },
@@ -208,12 +208,12 @@ return {
         { "<leader>sn", M.picker("notify"), desc = "Notify History" },
         { "<leader>so", M.picker("vim_options"), desc = "Options" },
         { "<leader>sq", M.picker("quickfix"), desc = "Quick Fix" },
-        { "<leader>sR", M.picker("resume"), desc = "Resume" },
-        { "<leader>sw", M.picker("grep_string", { word_match = "-w" }), desc = "Word" },
-        { "<leader>sW", M.picker("grep_string", { word_match = "-w", current_buffer = true }), desc = "Word" },
+        { "<leader>sr", M.picker("resume"), desc = "Resume" },
+        { "<leader>sw", M.picker("grep_string", { word_match = "-w" }), desc = "Word in Workspace" },
+        { "<leader>sW", M.picker("grep_string", { word_match = "-w", current_buffer = true }), desc = "Word in Buffer" },
         { "<leader>uC", M.picker("colorscheme", { enable_preview = true }), desc = "Colorscheme with preview" },
-        { "<leader>ss", M.picker("document_symbols", { symbols = M.get_kind_filter(), }), desc = "Goto Symbol", },
-        { "<leader>sS", M.picker("workspace_symbols", { symbols = M.get_kind_filter(), }), desc = "Goto Symbol", },
+        { "<leader>ss", M.picker("document_symbols", { symbols = M.get_kind_filter(), }), desc = "Symbol in Buffer", },
+        { "<leader>sS", M.picker("workspace_symbols", { symbols = M.get_kind_filter(), }), desc = "Symbol in Workspace", },
       })
     end,
     opts = {

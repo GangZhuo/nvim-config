@@ -21,6 +21,7 @@ return {
         ["<leader>s"] = { name = "+search" },
         ["<leader>u"] = { name = "+ui" },
         ["<leader>w"] = { name = "+windows" },
+        ["<space>"] = { name = "+diagnostics/quickfix" },
         ["<leader>x"] = { name = "+diagnostics/quickfix" },
       },
     },
