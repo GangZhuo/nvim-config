@@ -18,12 +18,17 @@ return {
           install_args = pip_args,
         },
         ensure_installed = {
+          -- LSP
           "clangd",
           "lua-language-server",
           "bash-language-server",
           "vim-language-server",
 
+          -- debugger
           "codelldb",
+
+          -- utils
+          "tree-sitter-cli",
         },
       }
     end,
