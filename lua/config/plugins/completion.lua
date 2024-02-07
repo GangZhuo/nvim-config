@@ -198,11 +198,16 @@ return {
         },
         exact_length = 2,
         first_case_insensitive = true,
-        document = {
-          enable = false,
-          command = { "wn", "${label}", "-over" },
-        },
       }
+
+      --[[
+      if vim.fn.executable("wn") == 1 then
+        opts.document = {
+          enable = true,
+          command = { "wn", "${label}", "-over" },
+        }
+      end
+      --]]
 
       require("cmp_dictionary").setup(opts)
 
