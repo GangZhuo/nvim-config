@@ -183,8 +183,7 @@ return {
     "uga-rosa/cmp-dictionary",
     lazy = true,
     opts = {},
-    config = function(_, opts)
-      local cmp_dict = require("cmp_dictionary")
+    config = function()
       local dict_root = string.format("%s/dict/", vim.fn.stdpath("config"))
 
       -- get fullpath
@@ -192,18 +191,20 @@ return {
         return dict_root..filename
       end
 
-      cmp_dict.setup(opts)
+      local opts = {
+        paths = {
+          F"global.dic",
+          F"en.dic",
+        },
+        exact_length = 2,
+        first_case_insensitive = true,
+        document = {
+          enable = false,
+          command = { "wn", "${label}", "-over" },
+        },
+      }
 
-      cmp_dict.switcher({
-        filepath = {
-          ["*"] = {
-            F"global.dic",
-          },
-        },
-        spelllang = {
-          en = F"en.dic",
-        },
-      })
+      require("cmp_dictionary").setup(opts)
 
     end
   },
