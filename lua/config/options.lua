@@ -252,6 +252,17 @@ if vim.fn.executable("rg") == 1 then
   vim.o.grepformat = "%f:%l:%c:%m"
 end
 
+if vim.fn.executable('python3') == 1 then
+  if vim.g.is_win then
+    vim.g.python3_host_prog = vim.fn.substitute(vim.fn.exepath("python3"), ".exe$", '', 'g')
+  else
+    vim.g.python3_host_prog = vim.fn.exepath("python3")
+  end
+else
+  vim.api.nvim_err_writeln("Python3 executable not found! You must install Python3 and set its PATH correctly!")
+  return
+end
+
 -- Enable true color support. Do not set this option if your terminal does not
 -- support true colors! For a comprehensive list of terminals supporting true
 -- colors, see https://github.com/termstandard/colors and https://gist.github.com/XVilka/8346728.
