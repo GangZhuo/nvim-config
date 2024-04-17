@@ -1,4 +1,5 @@
 local fn = vim.fn
+local api = vim.api
 
 local M = {}
 
@@ -47,15 +48,15 @@ end
 
 function M.fg(name)
   ---@type {foreground?:number}?
-  local hl = vim.api.nvim_get_hl and vim.api.nvim_get_hl(0, { name = name })
-      or vim.api.nvim_get_hl_by_name(name, true)
+  local hl = api.nvim_get_hl and api.nvim_get_hl(0, { name = name })
+      or api.nvim_get_hl_by_name(name, true)
   local fg = hl and (hl.fg or hl.foreground)
   return fg and { fg = string.format("#%06x", fg) }
 end
 
 ---@param on_attach fun(client, buffer)
 function M.on_lsp_attach(on_attach)
-  vim.api.nvim_create_autocmd("LspAttach", {
+  api.nvim_create_autocmd("LspAttach", {
     callback = function(args)
       local buffer = args.buf
       local client = vim.lsp.get_client_by_id(args.data.client_id)
@@ -179,7 +180,7 @@ function M.sudo_write(filepath, tmpfile)
     fn.shellescape(tmpfile),
     fn.shellescape(filepath))
   -- no need to check error as this fails the entire function
-  vim.api.nvim_exec(string.format("write! %s", tmpfile), true)
+  api.nvim_exec(string.format("write! %s", tmpfile), true)
   local succ, output = M.sudo_exec(cmd)
   if succ then
     vim.cmd("e!")
@@ -249,7 +250,7 @@ function M.float_term(cmd, opts)
       vim.keymap.set("t", "<c-l>", "<c-l>", { buffer = buf, nowait = true })
     end
 
-    vim.api.nvim_create_autocmd("BufEnter", {
+    api.nvim_create_autocmd("BufEnter", {
       buffer = buf,
       callback = function()
         vim.cmd.startinsert()
@@ -258,6 +259,26 @@ function M.float_term(cmd, opts)
   end
 
   return terminals[termkey]
+end
+
+M.buf_is_workspace = function (bufnr)
+  local quit_filetypes = {
+    "qf",
+    "vista",
+    "NvimTree",
+  }
+  local bf = fn.getbufvar(bufnr, '&filetype')
+  return not vim.tbl_contains(quit_filetypes, bf)
+end
+
+M.close_all_buffers_but_current = function ()
+  local bufs = api.nvim_list_bufs()
+  local current_buf = api.nvim_get_current_buf()
+  for _,i in ipairs(bufs) do
+    if i ~= current_buf and M.buf_is_workspace(i) then
+        api.nvim_buf_delete(i, {})
+    end
+  end
 end
 
 return M

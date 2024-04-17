@@ -34,3 +34,11 @@ vim.api.nvim_create_user_command(
   end,
   { nargs = 0, desc = 'Unset proxy' }
 )
+
+vim.api.nvim_create_user_command(
+  'CloseAllBuffers',
+  function()
+    utils.close_all_buffers_but_current()
+  end,
+  { nargs = 0, desc = 'Close all buffers but current' }
+)

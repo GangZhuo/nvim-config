@@ -43,24 +43,15 @@ api.nvim_create_autocmd({ "BufEnter" }, {
   pattern = "*",
   group = api.nvim_create_augroup("auto_close_win", { clear = true }),
   callback = function()
-    local quit_filetypes = {
-      "qf",
-      "vista",
-      "NvimTree",
-    }
-
     local should_quit = true
-
+    local utils = require("config.utils")
     local tabwins = api.nvim_tabpage_list_wins(0)
     for _,w in ipairs(tabwins) do
       local bufnr = api.nvim_win_get_buf(w)
-      local bf = fn.getbufvar(bufnr, '&filetype')
-
-      if not vim.tbl_contains(quit_filetypes, bf) then
+      if utils.buf_is_workspace(bufnr) then
         should_quit = false
       end
     end
-
     if should_quit then
       vim.cmd([[qall]])
     end

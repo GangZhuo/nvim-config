@@ -101,6 +101,11 @@ map("n", "<leader>`", "<cmd>e #<cr>", { desc = "Switch to Other Buffer" })
 map("n", [[\d]], "<cmd>bprevious <bar> bdelete #<cr>",
   { silent = true, desc = "delete buffer" }
 )
+map("n", [[\D]], function ()
+  require("config.utils").close_all_buffers_but_current()
+end,
+  { silent = true, desc = "Close all buffers but current" }
+)
 
 -- Break inserted text into smaller undo units when we
 -- insert some punctuation chars.
