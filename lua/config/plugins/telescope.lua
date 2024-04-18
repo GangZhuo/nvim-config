@@ -73,12 +73,13 @@ M.document_symbols = function(opts)
 end
 
 M.get_visual_selection = function ()
+  local text = vim.fn.getreg("\"") or {}
   vim.cmd("noau normal! \"vy")
-  local text = vim.fn.getreg("v")
-  vim.fn.setreg("v", {})
-  text = string.gsub(text, "\n", "")
-  if #text > 0 then
-    return text
+  local v_text = vim.fn.getreg("v")
+  vim.fn.setreg("\"", text)
+  v_text = string.gsub(v_text, "\n", "")
+  if #v_text > 0 then
+    return v_text
   else
     return ""
   end
