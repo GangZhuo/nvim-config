@@ -74,7 +74,7 @@ return {
       }) do
         table.insert(keys, {
           "<leader>"..i,
-          "<cmd>lua require('bufferline').go_to_buffer("..i..")<cr>",
+          "<cmd>lua require('bufferline').go_to_buffer("..i..", true)<cr>",
           desc = "Goto "..n.." buffer",
         })
       end
