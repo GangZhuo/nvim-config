@@ -72,17 +72,33 @@ M.document_symbols = function(opts)
   end
 end
 
+M.get_reg = function (name)
+  local text = vim.fn.getreg(name)
+  return string.gsub(text, "\n", "") or ""
+end
+
+M.set_reg = function (name, value)
+  vim.fn.setreg(name, value or {})
+end
+
+M.save_reg = function (name)
+  M.saved_regs = M.saved_regs or {}
+  M.saved_regs[name] = M.get_reg()
+end
+
+M.restore_reg = function (name)
+  M.saved_regs = M.saved_regs or {}
+  local text = M.saved_regs[name] or {}
+  M.set_reg(name, text)
+end
+
 M.get_visual_selection = function ()
-  local text = vim.fn.getreg("\"") or {}
-  vim.cmd("noau normal! \"vy")
-  local v_text = vim.fn.getreg("v")
-  vim.fn.setreg("\"", text)
-  v_text = string.gsub(v_text, "\n", "")
-  if #v_text > 0 then
-    return v_text
-  else
-    return ""
-  end
+  local text
+  M.save_reg('"')
+  vim.cmd('noau normal! "vy')
+  text = M.get_reg('v')
+  M.restore_reg('"')
+  return text
 end
 
 M.picker = function(func, opts)
