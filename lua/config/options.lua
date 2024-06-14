@@ -203,7 +203,7 @@ vim.o.pumblend  = 10  -- pseudo transparency for completion menu
 vim.o.winblend = 0    -- pseudo transparency for floating window
 
 vim.o.spelllang = "en"  -- Spell languages
-vim.o.spellsuggest = 9  -- show 9 spell suggestions at most
+vim.o.spellsuggest = "9"  -- show 9 spell suggestions at most
 
 -- Align indent to next multiple value of shiftwidth. For its meaning,
 -- see http://vim.1045645.n5.nabble.com/shiftround-option-td5712100.html
