@@ -69,7 +69,7 @@ api.nvim_create_autocmd({ "BufReadPre" }, {
     local sz = fn.getfsize(f)
 
     if sz > large_file or sz == -2 then
-      vim.o.eventignore = vim.o.eventignore .. ",all"
+      table.insert(vim.opt.eventignore, "all")
       -- turning off relative number helps a lot
       vim.wo.relativenumber = false
       vim.bo.bufhidden = "unload"
