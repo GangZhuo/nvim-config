@@ -8,27 +8,27 @@ return {
     opts = {
       defaults = {
         mode = { "n", "v" },
-        ["g"] = { name = "+goto" },
-        ["gs"] = { name = "+surround" },
-        ["]"] = { name = "+next" },
-        ["["] = { name = "+prev" },
-        ["<leader>b"] = { name = "+buffer" },
-        ["<leader>c"] = { name = "+code" },
-        ["<leader>d"] = { name = "+debug" },
-        ["<leader>f"] = { name = "+file/find" },
-        ["<leader>g"] = { name = "+git" },
-        ["<leader>q"] = { name = "+quit/session" },
-        ["<leader>s"] = { name = "+search" },
-        ["<leader>u"] = { name = "+ui" },
-        ["<leader>w"] = { name = "+windows" },
-        ["<space>"] = { name = "+diagnostics/quickfix" },
-        ["<leader>x"] = { name = "+diagnostics/quickfix" },
+        { "g", group = "+goto" },
+        { "gs", group = "+surround" },
+        { "]", group = "+next" },
+        { "[", group = "+prev" },
+        { "<leader>b", group = "+buffer" },
+        { "<leader>c", group = "+code" },
+        { "<leader>d", group = "+debug" },
+        { "<leader>f", group = "+file/find" },
+        { "<leader>g", group = "+git" },
+        { "<leader>q", group = "+quit/session" },
+        { "<leader>s", group = "+search" },
+        { "<leader>u", group = "+ui" },
+        { "<leader>w", group = "+windows" },
+        { "<space>", group = "+diagnostics/quickfix" },
+        { "<leader>x", group = "+diagnostics/quickfix" },
       },
     },
     config = function(_, opts)
       local wk = require("which-key")
       wk.setup(opts)
-      wk.register(opts.defaults)
+      wk.add(opts.defaults)
     end,
   },
 
