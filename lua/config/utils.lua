@@ -41,8 +41,43 @@ function M.exec_cmd(cmd)
   return nil
 end
 
+--- check whether a feature exists in Nvim
+--- @param feat string the feature name, like `nvim-0.7` or `unix`.
+--- @return boolean
+function M.has(feat)
+  if fn.has(feat) == 1 then
+    return true
+  end
+  return false
+end
+
+--- Is windows?
+function M.is_win()
+  if M.has("win32") or M.has("win64") then
+    return true
+  end
+  return false
+end
+
+--- Is linux?
+function M.is_linux()
+  if M.has("unix") and (not M.has("macunix")) then
+    return true
+  end
+  return false
+end
+
+--- Is mac?
+function M.is_mac()
+  if M.has("macunix") then
+    return true
+  end
+  return false
+end
+
+--- check whether a plugin exists
 ---@param plugin string
-function M.has(plugin)
+function M.has_plugin(plugin)
   return require("lazy.core.config").spec.plugins[plugin] ~= nil
 end
 

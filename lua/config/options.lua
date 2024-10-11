@@ -6,9 +6,6 @@ vim.g.mapleader = ','
 -- Enable highlighting for lua HERE doc inside vim script
 vim.g.vimsyn_embed = 'l'
 
--- Enable highlighting for lua HERE doc inside vim script
-vim.g.vimsyn_embed = 'l'
-
 vim.g.loaded_perl_provider = 0  -- Disable perl provider
 vim.g.loaded_ruby_provider = 0  -- Disable ruby provider
 vim.g.loaded_node_provider = 0  -- Disable node provider
@@ -253,7 +250,7 @@ if vim.fn.executable("rg") == 1 then
 end
 
 if vim.fn.executable('python3') == 1 then
-  if vim.g.is_win then
+  if utils.is_win() then
     vim.g.python3_host_prog = vim.fn.substitute(vim.fn.exepath("python3"), ".exe$", '', 'g')
   else
     vim.g.python3_host_prog = vim.fn.exepath("python3")
@@ -266,7 +263,7 @@ end
 -- Enable true color support. Do not set this option if your terminal does not
 -- support true colors! For a comprehensive list of terminals supporting true
 -- colors, see https://github.com/termstandard/colors and https://gist.github.com/XVilka/8346728.
-if vim.fn.has("termguicolors") == 1 then
+if utils.has("termguicolors") then
   vim.o.termguicolors = true
   -- Set up cursor color and shape in various mode, ref:
   -- https://github.com/neovim/neovim/wiki/FAQ#how-to-change-cursor-color-in-the-terminal

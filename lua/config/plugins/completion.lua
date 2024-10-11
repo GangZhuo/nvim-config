@@ -151,8 +151,8 @@ return {
         end
       end
 
-      del_source("copilot", utils.has("copilot.lua"))
-      del_source("nvim_lsp", utils.has("nvim-lspconfig"))
+      del_source("copilot", utils.has_plugin("copilot.lua"))
+      del_source("nvim_lsp", utils.has_plugin("nvim-lspconfig"))
 
       cmp.setup(opts)
 

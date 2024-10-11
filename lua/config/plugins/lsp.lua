@@ -44,14 +44,14 @@ return {
 
       local capabilities
 
-      if utils.has("nvim-cmp") then
+      if utils.has_plugin("nvim-cmp") then
         capabilities = require("cmp_nvim_lsp").default_capabilities()
       else
         capabilities = vim.lsp.protocol.make_client_capabilities()
       end
 
       -- nvim-ufo using 'foldingRange' capability,
-      if utils.has("nvim-ufo") then
+      if utils.has_plugin("nvim-ufo") then
         capabilities.textDocument.foldingRange = {
           dynamicRegistration = false,
           lineFoldingOnly = true
@@ -59,7 +59,7 @@ return {
       end
 
       -- 'j-hui/fidget.nvim' need workDoneProgress capability
-      if utils.has("fidget.nvim") then
+      if utils.has_plugin("fidget.nvim") then
         capabilities.window = capabilities.window or {}
         capabilities.window.workDoneProgress = true
       end
