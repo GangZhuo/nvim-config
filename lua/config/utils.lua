@@ -93,33 +93,19 @@ end
 ---  local str = join_arr({a=1, b=2}, ",")
 ---  str: a:1,b:2
 function M.join_dic(dic, sep)
-  local str = ""
-  sep = sep or ','
+  local t = {}
   for k,v in pairs(dic) do
-      if str:len() == 0 then
-        str = string.format("%s:%s", k, v)
-      else
-        str = str..string.format("%s%s:%s", sep, k, v)
-      end
+    table.insert(t, string.format("%s:%s", k, v))
   end
-  return str
+  return table.concat(t, sep or ',')
 end
 
 --- Join array
 --- e.g.
 ---  local str = join_arr({"a", "b","c","d"},",")
 ---  str: a,b,c,d
-function M.join_arr(dic, sep)
-  local str = ""
-  sep = sep or ','
-  for _,v in ipairs(dic) do
-      if str:len() == 0 then
-        str = v
-      else
-        str = str..string.format("%s%s", sep, v)
-      end
-  end
-  return str
+function M.join_arr(arr, sep)
+  return table.concat(arr, sep or ',')
 end
 
 --- Remove element from array
