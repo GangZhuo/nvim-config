@@ -256,23 +256,15 @@ return {
     },
     opts = function ()
 
-      local edit = function (mode, node)
-        local path = node.absolute_path
-        if node.link_to and not node.nodes then
-          path = node.link_to
-        end
-        require("nvim-tree.actions.node.open-file").fn(mode, path)
-      end
-
       local expand = function()
         local api = require("nvim-tree.api")
         local node = api.tree.get_node_under_cursor()
         if node.nodes then
           if not node.open then
-            require("nvim-tree.lib").expand_or_collapse(node)
+            require("nvim-tree.api").node.open.edit(node)
           end
         elseif node.parent then
-          edit("edit", node)
+          require("nvim-tree.api").node.open.edit(node)
         end
       end
 
@@ -280,7 +272,7 @@ return {
         local api = require("nvim-tree.api")
         local node = api.tree.get_node_under_cursor()
         if node.nodes and node.open then
-          require("nvim-tree.lib").expand_or_collapse(node)
+          require("nvim-tree.api").node.open.edit(node)
           return
         end
         -- find parent node which is opened
@@ -293,7 +285,7 @@ return {
         end
         -- if found and not a root node, collapse the node
         if p and p ~= node and p.parent and p.open then
-          require("nvim-tree.lib").expand_or_collapse(p)
+          require("nvim-tree.api").node.open.edit(p)
           require("nvim-tree.utils").focus_file(p.absolute_path)
         end
       end
