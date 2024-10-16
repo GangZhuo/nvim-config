@@ -75,6 +75,28 @@ function M.is_mac()
   return false
 end
 
+function M.get_python3_prog()
+  local py_prog
+  if vim.fn.executable('python3') == 1 then
+    py_prog = vim.fn.exepath("python3")
+  elseif vim.fn.executable('python') == 1 then
+    local x = M.exec_cmd("python --version") or ""
+    x = M.split(x, " ")[2] or ""
+    x = tonumber(M.split(x, ".")[1] or "0")
+    if x == 3 then
+      py_prog = vim.fn.exepath("python")
+    end
+  else
+    vim.api.nvim_err_writeln(
+      "Python3 executable not found! " ..
+      "You should install Python3 and set its PATH correctly!")
+  end
+  if py_prog ~= nil and M.is_win() then
+    py_prog = vim.fn.substitute(py_prog, ".exe$", '', 'g')
+  end
+  return py_prog
+end
+
 --- check whether a plugin exists
 ---@param plugin string
 function M.has_plugin(plugin)
