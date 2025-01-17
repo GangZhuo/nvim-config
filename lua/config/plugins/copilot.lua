@@ -3,7 +3,7 @@ return {
   -- Github Copilot Completion
   {
     "zbirenbaum/copilot.lua",
-    enabled = false,
+    enabled = true,
     cmd = "Copilot",
     event = "InsertEnter",
     opts = {
@@ -18,6 +18,14 @@ return {
         vim.g.copilot_proxy = proxy_url
       end
       require("copilot").setup(opts)
+    end
+  },
+
+  -- Turn github copilot into a cmp source
+  {
+    "zbirenbaum/copilot-cmp",
+    config = function ()
+      require("copilot_cmp").setup()
     end
   },
 
