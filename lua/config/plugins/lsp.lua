@@ -195,6 +195,26 @@ return {
         }
       end
 
+      -- set up rust-analyzer
+      if vim.fn.executable("rust-analyzer") == 1 then
+        lspconfig.rust_analyzer.setup {
+          on_attach = function (client, bufnr)
+            on_attach(client, bufnr)
+            vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+          end,
+          capabilities = capabilities,
+          settings = {
+            --[[
+            ['rust-analyzer'] = {
+              diagnostics = {
+                enable = false;
+              },
+            },
+            --]]
+          },
+        }
+      end
+
     end
   },
 
