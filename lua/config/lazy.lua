@@ -15,7 +15,7 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
   spec = {
     -- import plugins
-    { import = "config.plugins" },
+    { import = "plugins" },
   },
   defaults = {
     -- should plugins be lazy-loaded?
