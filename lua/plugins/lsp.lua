@@ -8,28 +8,33 @@ return {
       "mason.nvim",
       "hrsh7th/cmp-nvim-lsp",
     },
-    opts = {
-      diagnostics = {
-        virtual_text = false,
-        underline = false,
-        signs = true,
-        severity_sort = true,
-        float = {
-          focusable = true,
-          style = "minimal",
-          border = "rounded",
-          source = "always",
-          header = "",
-          prefix = "",
+    opts = function ()
+      local icons = require("config.icons").diagnostics
+      return {
+        diagnostics = {
+          virtual_text = false,
+          underline = false,
+          signs = {
+            text = {
+              [vim.diagnostic.severity.ERROR] = icons.Error,
+              [vim.diagnostic.severity.WARN]  = icons.Warn,
+              [vim.diagnostic.severity.INFO]  = icons.Info,
+              [vim.diagnostic.severity.HINT]  = icons.Hint,
+            },
+          },
+          severity_sort = true,
+          float = {
+            focusable = true,
+            style = "minimal",
+            border = "rounded",
+            source = "always",
+            header = "",
+            prefix = "",
+          },
         },
-      },
-    },
+      }
+    end,
     config = function(_, opts)
-      -- Change diagnostic signs.
-      for name, icon in pairs(require("config.icons").diagnostics) do
-        name = "DiagnosticSign" .. name
-        vim.fn.sign_define(name, { text = icon, texthl = name, numhl = "" })
-      end
 
       -- global config for diagnostic
       vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
