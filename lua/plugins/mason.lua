@@ -28,7 +28,7 @@ return {
           "codelldb",
 
           -- utils
-          "tree-sitter-cli",
+          --"tree-sitter-cli",
         },
       }
     end,
