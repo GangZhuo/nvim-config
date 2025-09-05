@@ -13,23 +13,27 @@ return {
         proxy_url = string.gsub(proxy_url, "(.-)/*$", "%1")
         pip_args = { "--proxy", proxy_url }
       end
+      local ensure_installed = {
+        -- LSP
+        --"clangd",
+        "lua-language-server",
+        "bash-language-server",
+        "vim-language-server",
+
+        -- debugger
+        "codelldb",
+
+        -- utils
+        --"tree-sitter-cli",
+      }
+      if not require('config.utils').is_win() then
+        table.insert(ensure_installed, 'clangd')
+      end
       return {
         pip = {
           install_args = pip_args,
         },
-        ensure_installed = {
-          -- LSP
-          "clangd",
-          "lua-language-server",
-          "bash-language-server",
-          "vim-language-server",
-
-          -- debugger
-          "codelldb",
-
-          -- utils
-          --"tree-sitter-cli",
-        },
+        ensure_installed = ensure_installed,
       }
     end,
     config = function(_, opts)
