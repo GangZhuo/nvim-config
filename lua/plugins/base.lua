@@ -68,6 +68,7 @@ return {
   -- automatically update your ctags file
   {
     "ludovicchabant/vim-gutentags",
+    enabled = false,
     event = "VeryLazy",
     config = function()
       -- A list of arguments to pass to `ctags`.

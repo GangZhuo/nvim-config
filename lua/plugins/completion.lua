@@ -153,6 +153,7 @@ return {
 
       del_source("copilot", utils.has_plugin("copilot.lua"))
       del_source("nvim_lsp", utils.has_plugin("nvim-lspconfig"))
+      del_source("ctags", utils.has_plugin("vim-gutentags"))
 
       cmp.setup(opts)
 
