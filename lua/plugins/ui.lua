@@ -256,6 +256,16 @@ return {
     },
     opts = function ()
 
+      local focus_file = function (node)
+        local focus_file = require("nvim-tree.utils").focus_file
+        if type(focus_file) == "function" then
+          focus_file(node.absolute_path)
+        else
+          local explorer = require("nvim-tree.core").get_explorer()
+          explorer:focus_node_or_parent(node)
+        end
+      end
+
       local expand = function()
         local api = require("nvim-tree.api")
         local node = api.tree.get_node_under_cursor()
@@ -286,7 +296,7 @@ return {
         -- if found and not a root node, collapse the node
         if p and p ~= node and p.parent and p.open then
           require("nvim-tree.api").node.open.edit(p)
-          require("nvim-tree.utils").focus_file(p.absolute_path)
+          focus_file(p)
         end
       end
 
