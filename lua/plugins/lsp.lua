@@ -121,35 +121,38 @@ return {
 
       end
 
-      local lspconfig = require("lspconfig")
+      local lspconfig = function (name, configs)
+        vim.lsp.config(name, configs)
+        vim.lsp.enable(name)
+      end
 
       -- set up clangd
       if vim.fn.executable("clangd") == 1 then
-        lspconfig.clangd.setup {
+        lspconfig("clangd", {
           on_attach = on_attach,
           capabilities = capabilities,
-        }
+        })
       end
 
       -- set up vim-language-server
       if vim.fn.executable("vim-language-server") == 1 then
-        lspconfig.vimls.setup {
+        lspconfig("vimls", {
           on_attach = on_attach,
           capabilities = capabilities,
-        }
+        })
       end
 
       -- set up bash-language-server
       if vim.fn.executable("bash-language-server") == 1 then
-        lspconfig.bashls.setup {
+        lspconfig("bashls", {
           on_attach = on_attach,
           capabilities = capabilities,
-        }
+        })
       end
 
       -- set up lua-language-server
       if vim.fn.executable("lua-language-server") == 1 then
-        lspconfig.lua_ls.setup {
+        lspconfig("lua_ls", {
           on_attach = on_attach,
           capabilities = capabilities,
           settings = {
@@ -171,7 +174,7 @@ return {
               },
             },
           },
-        }
+        })
       end
 
       -- set up python-lsp-server
@@ -185,7 +188,7 @@ return {
         else
           py_path = vim.g.python3_host_prog
         end
-        lspconfig.pylsp.setup {
+        lspconfig("pylsp", {
           on_attach = on_attach,
           capabilities = capabilities,
           flags = {
@@ -217,12 +220,12 @@ return {
               },
             },
           },
-        }
+        })
       end
 
       -- set up rust-analyzer
       if vim.fn.executable("rust-analyzer") == 1 then
-        lspconfig.rust_analyzer.setup {
+        lspconfig("rust_analyzer", {
           on_attach = on_attach,
           capabilities = capabilities,
           settings = {
@@ -234,7 +237,7 @@ return {
             },
             --]]
           },
-        }
+        })
       end
 
     end
