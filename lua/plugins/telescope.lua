@@ -50,11 +50,21 @@ M.get_kind_filter = function (buf)
          M.kind_filter.default or nil
 end
 
-M.workspace_symbols = function(opts)
+M.has_lsp_clients = function (bufnr)
   local lsp = vim.lsp
-  local buf_clients = lsp.get_active_clients({ bufnr = opts.bufnr })
+  local utils = require("config.utils")
+  local buf_clients
+  if utils.expect_ver('0.10.0') then
+    buf_clients = lsp.get_clients({ bufnr = bufnr })
+  else
+    buf_clients = lsp.get_active_clients({ bufnr = bufnr })
+  end
   local buf_client_num = #vim.tbl_keys(buf_clients)
-  if buf_client_num > 0 then
+  return buf_client_num > 0
+end
+
+M.workspace_symbols = function(opts)
+  if M.has_lsp_clients(opts.bufnr) then
     require("telescope.builtin").lsp_workspace_symbols(opts)
   else
     require("telescope.builtin").tags(opts)
@@ -62,10 +72,7 @@ M.workspace_symbols = function(opts)
 end
 
 M.document_symbols = function(opts)
-  local lsp = vim.lsp
-  local buf_clients = lsp.get_active_clients({ bufnr = opts.bufnr })
-  local buf_client_num = #vim.tbl_keys(buf_clients)
-  if buf_client_num > 0 then
+  if M.has_lsp_clients(opts.bufnr) then
     require("telescope.builtin").lsp_document_symbols(opts)
   else
     require("telescope.builtin").current_buffer_tags(opts)
