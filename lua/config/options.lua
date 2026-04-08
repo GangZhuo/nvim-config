@@ -261,3 +261,7 @@ if utils.has("termguicolors") then
   --vim.o.guicursor = "n-v-c:block-Cursor/lCursor,i-ci-ve:ver25-Cursor2/lCursor2,r-cr:hor20,o:hor20"
 end
 
+if utils.expect_ver("0.12.0") then
+  require("config.ui2")
+end
+

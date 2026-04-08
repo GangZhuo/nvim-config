@@ -178,11 +178,13 @@ end
 -- Get nvim version
 function M.version()
   local actual_ver = vim.version()
-  local nvim_ver_str = string.format("%d.%d.%d", actual_ver.major, actual_ver.minor, actual_ver.patch)
+  local nvim_ver_str = string.format("%d.%d.%d",
+    actual_ver.major, actual_ver.minor, actual_ver.patch)
   return nvim_ver_str
 end
 
--- Check if nvim is the expected version
+-- Check whether the version of nvim is greater than or equal to
+-- the expected version
 function M.expect_ver(expected_ver)
   local a = M.split(expected_ver, ".")
   local actual_ver = vim.version()
