@@ -39,11 +39,11 @@ return {
       -- global config for diagnostic
       vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
 
-      -- Change border of documentation hover window,
-      -- See https://github.com/neovim/neovim/pull/13998.
-      vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-        border = "rounded",
-      })
+      vim.lsp.handlers["textDocument/hover"] = function(err, result, ctx, config)
+        config = config or {}
+        config.border = "rounded"
+        return vim.lsp.handlers.hover(err, result, ctx, config)
+      end
 
       local utils = require("config.utils")
 
