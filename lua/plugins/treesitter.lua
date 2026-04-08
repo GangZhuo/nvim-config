@@ -1,47 +1,73 @@
-return {
+local utils = require("config.utils")
+local treesitter
 
-  -- treesitter
-  {
+local ts_parsers = {
+  "bash",
+  "c",
+  "html",
+  "javascript",
+  "jsdoc",
+  "json",
+  "lua",
+  "luadoc",
+  "luap",
+  "markdown",
+  "markdown_inline",
+  "python",
+  "query",
+  "regex",
+  "tsx",
+  "typescript",
+  "vim",
+  "vimdoc",
+  "yaml",
+  "rust",
+}
+
+if utils.expect_ver("0.12.0") then
+  treesitter = {
     "nvim-treesitter/nvim-treesitter",
-    version = false, -- last release is way too old and doesn't work on Windows
+    branch = "main",
+    build = ":TSUpdate",
+    lazy = false,
+    config = function(_, opts)
+      local ts = require('nvim-treesitter')
+      ts.install(ts_parsers)
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = ts_parsers,
+        callback = function()
+          vim.treesitter.start()
+          vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+        end,
+      })
+    end,
+  }
+else
+  treesitter = {
+    "nvim-treesitter/nvim-treesitter",
+    branch = "master",
     build = ":TSUpdate",
     event = { "BufReadPost", "BufNewFile" },
     cmd = { "TSUpdateSync" },
-    opts = {
-      highlight = {
-        enable = true, -- false will disable the whole extension
-        additional_vim_regex_highlighting = false,
-        disable = { "help" }, -- list of language that will be disabled
-      },
-      indent = { enable = true },
-      matchup = { enable = true },
-      ensure_installed = {
-        "bash",
-        "c",
-        "html",
-        "javascript",
-        "jsdoc",
-        "json",
-        "lua",
-        "luadoc",
-        "luap",
-        "markdown",
-        "markdown_inline",
-        "python",
-        "query",
-        "regex",
-        "tsx",
-        "typescript",
-        "vim",
-        "vimdoc",
-        "yaml",
-        "rust",
-      },
-    },
     config = function(_, opts)
-      require("nvim-treesitter.configs").setup(opts)
+      require("nvim-treesitter.configs").setup({
+        highlight = {
+          enable = true, -- false will disable the whole extension
+          additional_vim_regex_highlighting = false,
+          disable = { "help" }, -- list of language that will be disabled
+        },
+        indent = { enable = true },
+        matchup = { enable = true },
+        ensure_installed = ts_parsers,
+      })
     end,
-  },
+  }
+end
+
+return {
+
+  -- treesitter
+  treesitter,
 
   -- Modern matchit implementation base on treesitter
   {
